@@ -1,0 +1,28 @@
+.DS_Store
+
+# Rails: logs, tempfiles and uploads
+api/log/*
+!api/log/.keep
+api/tmp/*
+!api/tmp/.keep
+api/tmp/pids/*
+!api/tmp/pids/
+!api/tmp/pids/.keep
+api/tmp/storage/*
+!api/tmp/storage/
+!api/tmp/storage/.keep
+api/storage/*
+!api/storage/.keep
+
+# Secrets. credentials.yml.enc is encrypted and safe to commit; the key is not.
+api/config/master.key
+api/config/credentials/*.key
+**/.env
+**/.env.*
+!**/.env.example
+
+# Node
+node_modules/
+*.log
+npm-debug.log*
+.vite/
