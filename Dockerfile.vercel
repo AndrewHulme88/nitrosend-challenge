@@ -2,8 +2,12 @@
 # check=error=true
 
 # Builds the frontend and the API into one image, since Rails serves both.
-# docker build -t nitrosend-challenge .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<config/master.key> -e DATABASE_URL=<url> nitrosend-challenge
+# Named for Vercel, which detects Dockerfile.vercel and routes all traffic to
+# the container. It listens on port 80, which is Vercel's default.
+#
+# Locally:
+#   docker build -f Dockerfile.vercel -t nitrosend-challenge .
+#   docker run --rm -p 8080:80 -e SECRET_KEY_BASE_DUMMY=1 nitrosend-challenge
 
 ARG RUBY_VERSION=3.4.10
 ARG NODE_VERSION=22
