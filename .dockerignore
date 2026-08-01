@@ -1,0 +1,36 @@
+/.git/
+/.gitignore
+/.github
+
+# Docker-related files
+/.dockerignore
+/Dockerfile*
+/docker-compose.yml
+
+# Bundler config and environment files
+/api/.bundle
+**/.env*
+
+# Key files. RAILS_MASTER_KEY is supplied at runtime instead.
+/api/config/master.key
+/api/config/credentials/*.key
+
+# Logs, tempfiles and storage, keeping the directories.
+/api/log/*
+!/api/log/.keep
+/api/tmp/*
+!/api/tmp/.keep
+/api/tmp/pids/*
+!/api/tmp/pids/.keep
+/api/storage/*
+!/api/storage/.keep
+/api/tmp/storage/*
+!/api/tmp/storage/.keep
+
+# Local frontend build output. The image builds it from source instead, so
+# copying it in would risk shipping a stale bundle.
+/api/public/assets
+/api/public/index.html
+
+/frontend/node_modules
+/frontend/dist
