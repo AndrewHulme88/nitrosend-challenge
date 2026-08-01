@@ -5,18 +5,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: nitrosend_challenge_development
-    ports: 
-      - "5433:5432"
-    volumes: 
-      - postgres_data:/var/lib/postgresql/postgres_data
-
-  redis:
-    image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "5433:5432"
     volumes:
-      - redis_data:/redis_data
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:
-  redis_data:
