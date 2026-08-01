@@ -1,6 +1,14 @@
 require_relative "boot"
 
-require "rails/all"
+# Load only the frameworks this application uses. It is a JSON API backed by
+# Postgres that also serves the built frontend, so Active Storage, Action
+# Mailer, Action Cable, Action Mailbox, Action Text and Active Job are all
+# dead weight at boot.
+require "rails"
+require "active_model/railtie"
+require "active_record/railtie"
+require "action_controller/railtie"
+require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
