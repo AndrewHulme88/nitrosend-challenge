@@ -13,7 +13,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: fileURLToPath(new URL('../api/public', import.meta.url)),
+    outDir: fileURLToPath(new URL('../backend/public', import.meta.url)),
     // public/ also holds files Rails owns, such as robots.txt.
     emptyOutDir: false,
     assetsDir: 'assets',

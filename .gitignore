@@ -1,24 +1,24 @@
 .DS_Store
 
 # Rails: logs, tempfiles and uploads
-api/log/*
-!api/log/.keep
-api/tmp/*
-!api/tmp/.keep
-api/tmp/pids/*
-!api/tmp/pids/
-!api/tmp/pids/.keep
+backend/log/*
+!backend/log/.keep
+backend/tmp/*
+!backend/tmp/.keep
+backend/tmp/pids/*
+!backend/tmp/pids/
+!backend/tmp/pids/.keep
 
 # Secrets. credentials.yml.enc is encrypted and safe to commit; the key is not.
-api/config/master.key
-api/config/credentials/*.key
+backend/config/master.key
+backend/config/credentials/*.key
 **/.env
 **/.env.*
 !**/.env.example
 
 # Vite builds the frontend into the Rails public directory.
-api/public/*
-!api/public/robots.txt
+backend/public/*
+!backend/public/robots.txt
 
 # Node
 node_modules/

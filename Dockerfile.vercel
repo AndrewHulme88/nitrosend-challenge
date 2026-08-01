@@ -12,9 +12,9 @@
 ARG RUBY_VERSION=3.4.10
 ARG NODE_VERSION=22
 
-# Compile the Vue application. vite.config.ts writes to ../api/public, so the
+# Compile the Vue application. vite.config.ts writes to ../backend/public, so the
 # working directory mirrors the repository layout and the output lands in
-# /build/api/public.
+# /build/backend/public.
 FROM docker.io/library/node:$NODE_VERSION-slim AS frontend
 
 WORKDIR /build/frontend
@@ -52,13 +52,13 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install gems before copying the app so a code change does not rebuild them.
-COPY api/Gemfile api/Gemfile.lock ./
+COPY backend/Gemfile backend/Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
     bundle exec bootsnap precompile -j 1 --gemfile
 
-COPY api/ ./
+COPY backend/ ./
 
 # Precompile bootsnap code for faster boot times.
 # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
@@ -75,7 +75,7 @@ USER 1000:1000
 
 COPY --chown=rails:rails --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --chown=rails:rails --from=build /rails /rails
-COPY --chown=rails:rails --from=frontend /build/api/public /rails/public
+COPY --chown=rails:rails --from=frontend /build/backend/public /rails/public
 
 # Thruster terminates HTTP and serves the built frontend with compression,
 # forwarding everything else to Rails. Override HTTP_PORT if the platform

@@ -8,25 +8,25 @@
 /docker-compose.yml
 
 # Bundler config and environment files
-/api/.bundle
+/backend/.bundle
 **/.env*
 
 # Key files. RAILS_MASTER_KEY is supplied at runtime instead.
-/api/config/master.key
-/api/config/credentials/*.key
+/backend/config/master.key
+/backend/config/credentials/*.key
 
 # Logs, tempfiles and storage, keeping the directories.
-/api/log/*
-!/api/log/.keep
-/api/tmp/*
-!/api/tmp/.keep
-/api/tmp/pids/*
-!/api/tmp/pids/.keep
+/backend/log/*
+!/backend/log/.keep
+/backend/tmp/*
+!/backend/tmp/.keep
+/backend/tmp/pids/*
+!/backend/tmp/pids/.keep
 
 # Local frontend build output. The image builds it from source instead, so
 # copying it in would risk shipping a stale bundle.
-/api/public/assets
-/api/public/index.html
+/backend/public/assets
+/backend/public/index.html
 
 /frontend/node_modules
 /frontend/dist
