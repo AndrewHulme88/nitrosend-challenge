@@ -1,0 +1,64 @@
+# What the MCP manifest would carry if consequence were declared rather than
+# inferred from a single `destructiveHint` boolean. Tool names and operations
+# are taken from the real Nitrosend manifest; the consequence values are the
+# proposal.
+#
+# reversibility: read | reversible | irreversible
+# reach:         internal | nominated | audience | unknown
+#
+# Anything absent from this file resolves to the fail-closed default, so an
+# undeclared tool cannot quietly become an action that sends without asking.
+
+nitro_query:
+  reversibility: read
+  reach: internal
+
+nitro_review_delivery:
+  reversibility: read
+  reach: internal
+
+# Marked destructiveHint: true, but it only writes a draft. Its own
+# description says delivery is a separate explicit action.
+nitro_compose_campaign:
+  reversibility: reversible
+  reach: internal
+
+# Also destructiveHint: true, and genuinely irreversible, but it reaches
+# at most five addresses the operator nominated. Same flag as a send to
+# everyone, which is the distinction the current metadata cannot express.
+nitro_send_test_message:
+  reversibility: irreversible
+  reach: nominated
+
+# destructiveHint: false, despite importing up to 250k rows and
+# subscribing email contacts by default.
+nitro_import_contacts:
+  reversibility: irreversible
+  reach: audience
+
+# Ten operations under one destructiveHint: true. Pausing is trivially
+# undoable; going live is not. Operations left undeclared here cancel,
+# archive, restore, delete, reject, fall through to the fail-closed default,
+# which is the intended behaviour rather than an omission.
+nitro_control_delivery:
+  varies_by: operation
+  cases:
+    approve:
+      reversibility: reversible
+      reach: internal
+    pause:
+      reversibility: reversible
+      reach: audience
+    resume:
+      reversibility: reversible
+      reach: audience
+    schedule:
+      reversibility: irreversible
+      reach: audience
+      preview_with: nitro_review_delivery
+      rehearse_with: nitro_send_test_message
+    live:
+      reversibility: irreversible
+      reach: audience
+      preview_with: nitro_review_delivery
+      rehearse_with: nitro_send_test_message

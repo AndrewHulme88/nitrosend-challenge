@@ -14,7 +14,6 @@ stateless, so Postgres would have been a dependency with nothing in it.
 
 - `backend` — Rails API, which also serves the built frontend
 - `frontend` — Vue application
-- `docs` — the tool metadata audit the prototype is built on
 
 ## Local development
 
