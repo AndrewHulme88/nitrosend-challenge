@@ -1,0 +1,63 @@
+# The scripted conversation the prototype renders. Tool names and arguments are
+# real; the consequence of each one is not stored here, it is resolved from
+# ConsentPolicy when the conversation is served. Changing the consent manifest
+# therefore changes this interface, which is the point being demonstrated.
+
+steps:
+  - type: message
+    role: user
+    text: The winter sale ends Sunday. Get an email out to the newsletter list.
+
+  - type: message
+    role: assistant
+    text: Let me see who is on that list.
+
+  - type: action
+    tool: nitro_query
+    arguments:
+      entity: lists
+    summary: Read your contact lists
+    result: Newsletter subscribers — 12,431 people
+
+  - type: message
+    role: assistant
+    text: >-
+      Here is a draft. It leads on the Sunday deadline, since that is the
+      reason to open it today rather than on Monday.
+
+  - type: action
+    tool: nitro_compose_campaign
+    arguments:
+      name: Winter sale — last call
+    summary: Drafted “Last call — winter kit, 30% off”
+    result: Saved as a draft. Nothing has been sent.
+    undo: Discard the draft
+
+  - type: message
+    role: assistant
+    text: Ready to send whenever you are.
+
+  - type: action
+    tool: nitro_control_delivery
+    arguments:
+      operation: live
+    summary: Send the campaign
+    send:
+      subject: Last call — winter kit, 30% off
+      audience: Newsletter subscribers
+      recipients: 12431
+      preview:
+        heading: Winter kit, 30% off
+        body: >-
+          Three days left on the merino base layers and the insulated flask.
+          After Sunday they go back to full price.
+        cta: Shop the sale
+      checks:
+        - label: Sender verified
+          detail: hello@lumenkit.com
+          ok: true
+        - label: Unsubscribe link present
+          ok: true
+        - label: Spam score 1.2
+          detail: below the 5.0 threshold
+          ok: true

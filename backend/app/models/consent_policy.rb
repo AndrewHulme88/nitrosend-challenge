@@ -43,6 +43,10 @@ class ConsentPolicy
     end
 
     def declared? = declared
+
+    # The level travels with the axes it was derived from, so the interface can
+    # explain a decision rather than only obey it.
+    def as_json(*) = to_h.merge(consent_level: consent_level)
   end
 
   class << self

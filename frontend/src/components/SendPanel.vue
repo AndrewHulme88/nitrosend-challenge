@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Consequence, ReadinessCheck } from '@/types/consent'
+import { callSignature } from '@/lib/call'
+import type { Action, SendDetails } from '@/types/conversation'
 
 const props = defineProps<{
-  consequence: Consequence
-  subject: string
-  audience: string
-  recipients: number
-  checks: ReadinessCheck[]
+  action: Action & { send: SendDetails }
   testSentTo: string | null
 }>()
 
@@ -17,17 +14,15 @@ defineEmits<{
   dismiss: []
 }>()
 
-const formattedRecipients = computed(() =>
-  new Intl.NumberFormat(undefined).format(props.recipients),
+const details = computed(() => props.action.send)
+
+const signature = computed(() => callSignature(props.action.consequence))
+
+const recipients = computed(() =>
+  new Intl.NumberFormat(undefined).format(details.value.recipients),
 )
 
-const call = computed(() =>
-  props.consequence.operation
-    ? `${props.consequence.tool}(${props.consequence.operation})`
-    : props.consequence.tool,
-)
-
-const blocking = computed(() => props.checks.filter((check) => !check.ok))
+const blocking = computed(() => details.value.checks.filter((check) => !check.ok))
 </script>
 
 <template>
@@ -35,32 +30,32 @@ const blocking = computed(() => props.checks.filter((check) => !check.ok))
     class="animate-settle overflow-hidden rounded-xl border border-line-strong bg-paper shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.12)]"
     aria-labelledby="send-panel-heading"
   >
-    <!-- The exact call is always visible. The argument of this prototype is
-         that people should be able to see what the agent is about to do, so
-         hiding it behind friendly phrasing would undercut the point. -->
     <header class="flex items-baseline justify-between gap-4 border-b border-line px-5 py-3">
-      <h2 id="send-panel-heading" class="text-2xs font-medium uppercase text-muted">
+      <h3 id="send-panel-heading" class="text-2xs font-medium uppercase text-muted">
         Waiting for you
-      </h2>
-      <code class="text-2xs text-muted">{{ call }}</code>
+      </h3>
+      <code class="shrink-0 text-2xs text-muted">{{ signature }}</code>
     </header>
 
     <!-- Preview first. The thing being sent is the subject of the decision, so
          it comes before the controls rather than behind a "preview" link. -->
     <div class="border-b border-line bg-sunken px-5 py-5">
       <p class="text-2xs font-medium uppercase text-muted">Subject</p>
-      <p class="mt-1.5 text-lg font-medium tracking-tight">{{ subject }}</p>
+      <p class="mt-1.5 text-lg font-medium tracking-tight">{{ details.subject }}</p>
+
       <div class="mt-4 rounded-lg border border-line bg-paper p-4">
-        <slot name="preview">
-          <p class="text-sm text-muted">No preview available.</p>
-        </slot>
+        <p class="text-lg font-semibold tracking-tight">{{ details.preview.heading }}</p>
+        <p class="mt-2 text-sm text-muted">{{ details.preview.body }}</p>
+        <p class="mt-4 inline-block rounded-md bg-ink px-3 py-1.5 text-xs font-medium text-paper">
+          {{ details.preview.cta }}
+        </p>
       </div>
     </div>
 
-    <div v-if="checks.length" class="border-b border-line px-5 py-4">
+    <div v-if="details.checks.length" class="border-b border-line px-5 py-4">
       <ul class="space-y-2">
         <li
-          v-for="check in checks"
+          v-for="check in details.checks"
           :key="check.label"
           class="flex items-baseline gap-2.5 text-sm"
         >
@@ -81,8 +76,8 @@ const blocking = computed(() => props.checks.filter((check) => !check.ok))
          does not say what an operation does, saying so is more honest than
          quietly treating it as routine. -->
     <p
-      v-if="!consequence.declared"
-      class="border-b border-line bg-caution-soft px-5 py-3 text-sm text-ink"
+      v-if="!action.consequence.declared"
+      class="border-b border-line bg-caution-soft px-5 py-3 text-sm"
     >
       This action has not declared what it does, so it is being treated as
       irreversible.
@@ -90,9 +85,8 @@ const blocking = computed(() => props.checks.filter((check) => !check.ok))
 
     <footer class="px-5 py-5">
       <p class="text-base">
-        This sends to
-        <strong class="font-semibold">{{ formattedRecipients }} people</strong>
-        in {{ audience }}, and cannot be recalled.
+        This sends to <strong class="font-semibold">{{ recipients }} people</strong>
+        in {{ details.audience }}, and cannot be recalled.
       </p>
 
       <div class="mt-4 flex flex-wrap items-center gap-2.5">
@@ -109,7 +103,7 @@ const blocking = computed(() => props.checks.filter((check) => !check.ok))
           :disabled="blocking.length > 0"
           @click="$emit('send')"
         >
-          Send to {{ formattedRecipients }} people
+          Send to {{ recipients }} people
         </button>
         <button
           type="button"

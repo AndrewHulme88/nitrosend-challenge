@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     get "health", to: "health#show"
+    get "conversation", to: "conversation#show"
 
     # Claim every remaining /api path so an unknown endpoint answers with the
     # error envelope instead of the SPA document.
