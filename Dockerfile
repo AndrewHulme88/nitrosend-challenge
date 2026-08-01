@@ -2,12 +2,10 @@
 # check=error=true
 
 # Builds the frontend and the API into one image, since Rails serves both.
-# Named for Vercel, which detects Dockerfile.vercel and routes all traffic to
-# the container. It listens on port 80, which is Vercel's default.
 #
 # Locally:
-#   docker build -f Dockerfile.vercel -t nitrosend-challenge .
-#   docker run --rm -p 8080:80 -e SECRET_KEY_BASE_DUMMY=1 nitrosend-challenge
+#   docker build -t nitrosend-challenge .
+#   docker run --rm -p 8080:8080 -e SECRET_KEY_BASE_DUMMY=1 nitrosend-challenge
 
 ARG RUBY_VERSION=3.4.10
 ARG NODE_VERSION=22
@@ -78,7 +76,9 @@ COPY --chown=rails:rails --from=build /rails /rails
 COPY --chown=rails:rails --from=frontend /build/backend/public /rails/public
 
 # Thruster terminates HTTP and serves the built frontend with compression,
-# forwarding everything else to Rails. Override HTTP_PORT if the platform
-# requires a specific listening port.
-EXPOSE 80
+# forwarding everything else to Rails. Port 8080 rather than 80 because the
+# container runs as a non-root user, and binding below 1024 needs a capability
+# that not every runtime grants.
+ENV HTTP_PORT=8080
+EXPOSE 8080
 CMD ["./bin/thrust", "./bin/rails", "server"]

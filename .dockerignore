@@ -2,10 +2,11 @@
 /.gitignore
 /.github
 
-# Docker-related files
+# Build and deploy configuration
 /.dockerignore
 /Dockerfile*
 /docker-compose.yml
+/fly.toml
 
 # Bundler config and environment files
 /backend/.bundle

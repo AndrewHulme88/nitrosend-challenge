@@ -1,0 +1,27 @@
+# Fly stops idle machines by default, and a cold visitor then waits for a boot.
+# This is a demo people will open from a link, so the machine stays running.
+
+app = "nitrosend-challenge"
+primary_region = "syd"
+
+[http_service]
+  # Thruster listens on 8080, as set by HTTP_PORT in the Dockerfile.
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"
+  # Nothing should ever stop the machine, but if something does, a request
+  # brings it back rather than serving 503 until someone notices.
+  auto_start_machines = true
+
+  # Hits Rails rather than a static file, so a booted-but-broken app fails the
+  # deploy instead of serving errors.
+  [[http_service.checks]]
+    grace_period = "5s"
+    interval = "30s"
+    timeout = "5s"
+    method = "GET"
+    path = "/api/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
