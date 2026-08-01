@@ -5,8 +5,6 @@ module Api
   class BaseController < ApplicationController
     SCHEMA_VERSION = 1
 
-    rescue_from ActiveRecord::RecordNotFound, with: :not_found
-
     private
 
     def render_data(data, status: :ok, meta: {})

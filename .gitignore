@@ -8,11 +8,6 @@ api/tmp/*
 api/tmp/pids/*
 !api/tmp/pids/
 !api/tmp/pids/.keep
-api/tmp/storage/*
-!api/tmp/storage/
-!api/tmp/storage/.keep
-api/storage/*
-!api/storage/.keep
 
 # Secrets. credentials.yml.enc is encrypted and safe to commit; the key is not.
 api/config/master.key

@@ -11,7 +11,6 @@ module Api
       assert_equal 1, body["schema_version"]
       assert body["ok"]
       assert_equal "test", body["data"]["environment"]
-      assert body["data"]["database"]
     end
 
     test "unknown api paths return the error envelope rather than the SPA" do

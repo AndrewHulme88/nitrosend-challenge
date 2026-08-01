@@ -1,12 +1,11 @@
 require_relative "boot"
 
-# Load only the frameworks this application uses. It is a JSON API backed by
-# Postgres that also serves the built frontend, so Active Storage, Action
-# Mailer, Action Cable, Action Mailbox, Action Text and Active Job are all
-# dead weight at boot.
+# Load only the frameworks this application uses. It is a stateless JSON API
+# that also serves the built frontend: consent tiers are computed from a tool
+# call and a checked-in manifest, so there is nothing to persist and no
+# database. Everything else Rails ships with is dead weight at boot.
 require "rails"
 require "active_model/railtie"
-require "active_record/railtie"
 require "action_controller/railtie"
 require "rails/test_unit/railtie"
 
