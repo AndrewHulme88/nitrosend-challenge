@@ -21,6 +21,10 @@ api/config/credentials/*.key
 **/.env.*
 !**/.env.example
 
+# Vite builds the frontend into the Rails public directory.
+api/public/*
+!api/public/robots.txt
+
 # Node
 node_modules/
 *.log

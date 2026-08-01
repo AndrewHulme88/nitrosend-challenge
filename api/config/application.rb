@@ -32,6 +32,12 @@ module Api
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # The static file server would otherwise answer "/" with public/index.html
+    # before the router runs, which would serve the SPA shell with the
+    # far-future cache headers meant for digest-stamped assets. Naming a file
+    # that does not exist sends "/" to SpaController, which sets no-store.
+    config.public_file_server.index_name = "index_served_by_spa_controller"
+
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
