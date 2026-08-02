@@ -17,7 +17,7 @@ defineProps<{ mode: ConsentMode }>()
 
     <template v-if="mode === 'current'">
       <h1 class="mt-1.5 text-base font-medium tracking-tight">Current Version</h1>
-      <p class="mt-1.5 text-sm text-muted">
+      <p class="mt-1.5 text-sm text-pretty text-muted">
         Currently every tool with
         <code class="text-2xs text-ink">destructiveHint</code>
         gets the same Allow/Deny bar, and when something breaks, you get a
@@ -28,7 +28,7 @@ defineProps<{ mode: ConsentMode }>()
     </template>
     <template v-else>
       <h1 class="mt-1.5 text-base font-medium tracking-tight">Proposed Version</h1>
-      <p class="mt-1.5 text-sm text-muted">
+      <p class="mt-1.5 text-sm text-pretty text-muted">
         Consent is graded by consequence, and each step explains itself: why
         a call failed, what a draft did, who a send would reach, and what is
         blocking it. The campaign preview stays in the chat, no second window

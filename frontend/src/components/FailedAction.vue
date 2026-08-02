@@ -33,17 +33,17 @@ const toolLabel = computed(() =>
     v-else
     class="animate-rise rounded-xl border border-danger/25 bg-danger-soft px-4 py-3.5"
   >
-    <header class="flex items-baseline justify-between gap-4">
+    <header class="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
       <h3 class="text-sm font-medium">Could not {{ toolLabel }}</h3>
-      <code class="shrink-0 text-2xs text-muted">{{ action.tool }}</code>
+      <code class="shrink-0 text-2xs text-muted break-all">{{ action.tool }}</code>
     </header>
 
-    <p class="mt-1.5 text-sm text-ink">{{ action.failure.message }}</p>
+    <p class="mt-1.5 text-sm text-pretty text-ink">{{ action.failure.message }}</p>
 
     <button
       v-if="action.failure.retriable"
       type="button"
-      class="mt-3 text-sm font-medium text-accent transition-colors duration-150 hover:text-accent-hover"
+      class="mt-3 min-h-10 text-sm font-medium text-accent transition-colors duration-150 hover:text-accent-hover"
       @click="$emit('retry')"
     >
       Try again

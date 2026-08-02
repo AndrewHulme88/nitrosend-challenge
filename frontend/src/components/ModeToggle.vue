@@ -16,7 +16,7 @@ defineEmits<{
   >
     <button
       type="button"
-      class="rounded-md px-2.5 py-1 transition-colors duration-150"
+      class="min-h-8 rounded-md px-3 py-1.5 transition-colors duration-150"
       :class="mode === 'current' ? 'bg-paper text-ink shadow-sm' : 'text-muted hover:text-ink'"
       :aria-pressed="mode === 'current'"
       @click="$emit('update:mode', 'current')"
@@ -25,7 +25,7 @@ defineEmits<{
     </button>
     <button
       type="button"
-      class="rounded-md px-2.5 py-1 transition-colors duration-150"
+      class="min-h-8 rounded-md px-3 py-1.5 transition-colors duration-150"
       :class="mode === 'proposed' ? 'bg-paper text-ink shadow-sm' : 'text-muted hover:text-ink'"
       :aria-pressed="mode === 'proposed'"
       @click="$emit('update:mode', 'proposed')"

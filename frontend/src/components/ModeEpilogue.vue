@@ -35,23 +35,18 @@ onMounted(async () => {
     <p class="mt-1.5 text-base font-medium tracking-tight">What you just saw</p>
 
     <template v-if="mode === 'current'">
-      <p class="mt-1.5 text-sm text-muted">
-        Failures named the tool and stopped. Approvals asked Allow or Deny
-        with no in-thread preview of the audience or the blast
-        <template v-if="previewLinkOpened">
-          — and the Preview link would have taken you out of the chat to
-          another window, which is what you just simulated
-        </template>
-        <template v-else>
-          — seeing the campaign means leaving the chat for another window
-        </template>.
+      <p class="mt-1.5 text-sm text-pretty text-muted">
+        Failures named the tool and stopped with no explanation. Approvals 
+        asked Allow or Deny with no in-thread preview of the audience or the 
+        blast. The Preview link would have taken you out of the chat to another 
+        window, seeing the campaign means leaving the chat for another window.
         The Proposed version keeps the cause, the stakes, and the preview in
-        the same thread — and makes it obvious when something is still only a
+        the same thread, and makes it obvious when something is still only a
         draft versus actually sent.
       </p>
       <button
         type="button"
-        class="mt-3.5 text-sm font-medium text-accent transition-colors duration-150 hover:text-accent-hover"
+        class="mt-3.5 min-h-10 text-sm font-medium text-accent transition-colors duration-150 hover:text-accent-hover"
         @click="$emit('switch-mode', 'proposed')"
       >
         Compare with Proposed
@@ -59,7 +54,7 @@ onMounted(async () => {
     </template>
 
     <template v-else>
-      <p class="mt-1.5 text-sm text-muted">
+      <p class="mt-1.5 text-sm text-pretty text-muted">
         Failures explain themselves and offer a next step. Drafts say they are
         saved and that nothing has been sent, so composing never looks like a
         live blast, and when something does go out, that is stated plainly.
@@ -70,7 +65,7 @@ onMounted(async () => {
       </p>
       <button
         type="button"
-        class="mt-3.5 text-sm font-medium text-accent transition-colors duration-150 hover:text-accent-hover"
+        class="mt-3.5 min-h-10 text-sm font-medium text-accent transition-colors duration-150 hover:text-accent-hover"
         @click="$emit('switch-mode', 'current')"
       >
         Compare with Current

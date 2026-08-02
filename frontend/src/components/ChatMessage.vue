@@ -22,7 +22,7 @@ defineEmits<{
     <SpeakerLabel role="user" />
     <div class="flex flex-col items-start gap-2">
       <p
-        class="max-w-[85%] rounded-2xl px-4 py-2.5 text-base"
+        class="max-w-[min(85%,24rem)] rounded-2xl px-4 py-2.5 text-pretty text-base"
         :class="pending ? 'border border-line-strong bg-paper' : 'bg-sunken'"
       >
         {{ message.text }}
@@ -31,7 +31,7 @@ defineEmits<{
       <button
         v-if="pending"
         type="button"
-        class="rounded-lg bg-accent px-3.5 py-1.5 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-hover"
+        class="min-h-10 rounded-lg bg-accent px-3.5 py-1.5 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-hover"
         @click="$emit('send')"
       >
         Send

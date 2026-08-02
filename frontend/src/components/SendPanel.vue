@@ -42,16 +42,16 @@ const reasons = [
     class="animate-settle overflow-hidden rounded-xl border border-line-strong bg-paper shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.12)]"
     aria-labelledby="send-panel-heading"
   >
-    <header class="flex items-baseline justify-between gap-4 border-b border-line px-5 py-3">
+    <header class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line px-4 py-3 sm:px-5">
       <h3 id="send-panel-heading" class="text-2xs font-medium uppercase text-muted">
         Waiting for you
       </h3>
-      <code class="shrink-0 text-2xs text-muted">{{ signature }}</code>
+      <code class="min-w-0 max-w-full shrink text-2xs text-muted break-all">{{ signature }}</code>
     </header>
 
     <!-- One email frame: headers first, then the message. No second title
          competing with the subject outside the card. -->
-    <div class="border-b border-line bg-sunken px-5 py-5">
+    <div class="border-b border-line bg-sunken px-4 py-4 sm:px-5 sm:py-5">
       <p class="text-2xs font-medium uppercase tracking-wider text-muted">
         Email preview
       </p>
@@ -60,25 +60,25 @@ const reasons = [
         class="mt-3 overflow-hidden rounded-lg border border-line bg-paper"
         aria-label="Campaign email preview"
       >
-        <dl class="space-y-2 border-b border-line px-4 py-3 text-sm">
+        <dl class="space-y-2 border-b border-line px-3.5 py-3 text-sm sm:px-4">
           <div class="flex gap-3">
             <dt class="w-14 shrink-0 text-muted">To</dt>
-            <dd class="min-w-0 text-ink">
+            <dd class="min-w-0 text-pretty text-ink">
               {{ details.audience }}
               <span class="text-muted">· {{ recipients }} people</span>
             </dd>
           </div>
           <div class="flex gap-3">
             <dt class="w-14 shrink-0 text-muted">Subject</dt>
-            <dd class="min-w-0 font-medium text-ink">{{ details.subject }}</dd>
+            <dd class="min-w-0 text-pretty font-medium text-ink">{{ details.subject }}</dd>
           </div>
         </dl>
 
-        <div class="px-4 py-4">
-          <p class="text-base font-semibold tracking-tight">
+        <div class="px-3.5 py-4 sm:px-4">
+          <p class="text-base font-semibold tracking-tight text-pretty">
             {{ details.preview.heading }}
           </p>
-          <p class="mt-2 text-sm leading-relaxed text-muted">
+          <p class="mt-2 text-sm leading-relaxed text-pretty text-muted">
             {{ details.preview.body }}
           </p>
           <p
@@ -90,7 +90,7 @@ const reasons = [
       </article>
     </div>
 
-    <div v-if="details.checks.length" class="border-b border-line px-5 py-4">
+    <div v-if="details.checks.length" class="border-b border-line px-4 py-4 sm:px-5">
       <p class="text-2xs font-medium uppercase tracking-wider text-muted">
         Before sending
       </p>
@@ -105,7 +105,7 @@ const reasons = [
             :class="check.ok ? 'text-positive' : 'text-danger'"
             aria-hidden="true"
           >{{ check.ok ? '✓' : '✕' }}</span>
-          <span :class="check.ok ? 'text-muted' : 'text-ink'">
+          <span class="min-w-0 text-pretty" :class="check.ok ? 'text-muted' : 'text-ink'">
             {{ check.label }}
             <span v-if="check.detail" class="text-muted">— {{ check.detail }}</span>
           </span>
@@ -117,9 +117,9 @@ const reasons = [
          spent here because something is actually wrong. -->
     <div
       v-if="blocking.length"
-      class="border-b border-line bg-danger-soft px-5 py-3.5"
+      class="border-b border-line bg-danger-soft px-4 py-3.5 sm:px-5"
     >
-      <p class="text-sm">
+      <p class="text-sm text-pretty">
         <template v-if="blocking[0].detail">
           {{ blocking[0].label }} — {{ blocking[0].detail }}.
         </template>
@@ -128,7 +128,7 @@ const reasons = [
       </p>
       <button
         type="button"
-        class="mt-2 text-sm font-medium text-accent transition-colors duration-150 hover:text-accent-hover"
+        class="mt-2 min-h-10 text-sm font-medium text-accent transition-colors duration-150 hover:text-accent-hover"
         @click="emit('revise')"
       >
         Ask to revise the draft
@@ -140,14 +140,14 @@ const reasons = [
          quietly treating it as routine. -->
     <p
       v-if="!action.consequence.declared"
-      class="border-b border-line bg-caution-soft px-5 py-3 text-sm"
+      class="border-b border-line bg-caution-soft px-4 py-3 text-sm sm:px-5"
     >
       This action has not declared what it does, so it is being treated as
       irreversible.
     </p>
 
-    <footer class="px-5 py-5">
-      <p class="text-base">
+    <footer class="px-4 py-4 sm:px-5 sm:py-5">
+      <p class="text-base text-pretty">
         This sends to <strong class="font-semibold">{{ recipients }} people</strong>
         in {{ details.audience }}, and cannot be recalled.
       </p>
@@ -157,12 +157,12 @@ const reasons = [
       <template v-if="!blocking.length">
         <div v-if="choosingReason" class="mt-4">
           <p class="text-sm text-muted">Why hold this back?</p>
-          <div class="mt-2.5 flex flex-wrap gap-2">
+          <div class="mt-2.5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <button
               v-for="reason in reasons"
               :key="reason"
               type="button"
-              class="rounded-lg border border-line-strong bg-paper px-3 py-1.5 text-sm transition-colors duration-150 hover:bg-surface"
+              class="min-h-10 rounded-lg border border-line-strong bg-paper px-3 py-2 text-left text-sm transition-colors duration-150 hover:bg-surface sm:text-center"
               @click="emit('dismiss', reason)"
             >
               {{ reason }}
@@ -170,42 +170,44 @@ const reasons = [
           </div>
           <button
             type="button"
-            class="mt-3 text-sm text-muted transition-colors duration-150 hover:text-ink"
+            class="mt-3 min-h-10 text-sm text-muted transition-colors duration-150 hover:text-ink"
             @click="choosingReason = false"
           >
             Keep reviewing
           </button>
         </div>
 
-        <div v-else class="mt-4 flex flex-wrap items-center gap-2.5">
+        <div v-else class="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2.5">
           <button
             type="button"
-            class="rounded-lg border border-line-strong bg-paper px-3.5 py-2 text-sm font-medium transition-colors duration-150 hover:bg-surface"
+            class="min-h-10 rounded-lg border border-line-strong bg-paper px-3.5 py-2 text-sm font-medium transition-colors duration-150 hover:bg-surface"
             @click="emit('test')"
           >
             Send a test first
           </button>
           <button
             type="button"
-            class="rounded-lg bg-accent px-3.5 py-2 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-hover"
+            class="min-h-10 rounded-lg bg-accent px-3.5 py-2 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-hover"
             @click="emit('send')"
           >
             Send to {{ recipients }} people
           </button>
-          <button
-            type="button"
-            class="ml-auto text-sm text-muted transition-colors duration-150 hover:text-ink"
-            @click="choosingReason = true"
-          >
-            Not now
-          </button>
-          <button
-            type="button"
-            class="text-sm text-muted transition-colors duration-150 hover:text-ink"
-            @click="emit('discard')"
-          >
-            Discard the draft
-          </button>
+          <div class="flex items-center gap-4 pt-1 sm:ms-auto sm:pt-0">
+            <button
+              type="button"
+              class="min-h-10 text-sm text-muted transition-colors duration-150 hover:text-ink"
+              @click="choosingReason = true"
+            >
+              Not now
+            </button>
+            <button
+              type="button"
+              class="min-h-10 text-sm text-muted transition-colors duration-150 hover:text-ink"
+              @click="emit('discard')"
+            >
+              Discard the draft
+            </button>
+          </div>
         </div>
 
         <p v-if="!choosingReason" class="mt-3 text-sm text-muted">

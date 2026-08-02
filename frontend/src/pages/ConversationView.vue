@@ -28,12 +28,12 @@ function isDraftAction(step: Action) {
 </script>
 
 <template>
-  <div class="min-h-dvh bg-surface">
-    <header class="border-b border-line bg-paper/80 backdrop-blur">
-      <div class="mx-auto flex max-w-xl items-center justify-between gap-4 px-5 py-3.5">
+  <div class="min-h-dvh overflow-x-clip bg-surface">
+    <header class="sticky top-0 z-10 border-b border-line bg-paper/90 pt-[env(safe-area-inset-top)] backdrop-blur">
+      <div class="mx-auto flex max-w-xl items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-5 sm:py-3.5">
         <div class="min-w-0">
           <p class="text-sm font-medium tracking-tight">Nitrosend</p>
-          <p class="text-2xs text-muted">
+          <p class="truncate text-2xs text-muted">
             <template v-if="conversation.mode === 'proposed'">
               Graded by consequence
             </template>
@@ -43,13 +43,14 @@ function isDraftAction(step: Action) {
           </p>
         </div>
         <ModeToggle
+          class="shrink-0"
           :mode="conversation.mode"
           @update:mode="conversation.setMode($event)"
         />
       </div>
     </header>
 
-    <main class="mx-auto max-w-xl px-5 py-10 sm:py-14">
+    <main class="mx-auto max-w-xl px-4 py-8 pb-[max(2.5rem,env(safe-area-inset-bottom))] sm:px-5 sm:py-14">
       <p v-if="conversation.status === 'loading'" class="text-sm text-muted">
         Loading the conversation.
       </p>
