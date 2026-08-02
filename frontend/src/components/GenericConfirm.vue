@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { callSignature } from '@/lib/call'
 import type { Action } from '@/types/conversation'
 
 const props = defineProps<{ action: Action }>()
@@ -10,43 +9,39 @@ defineEmits<{
   deny: []
 }>()
 
-const signature = computed(() => callSignature(props.action.consequence))
+// Mirrors the live product: "Allow manage audience" from nitro_manage_audience.
+// No preview, no reach, no operation — the tool name is the entire prompt.
+const prompt = computed(() =>
+  props.action.tool.replace(/^nitro_/, '').replaceAll('_', ' '),
+)
 </script>
 
 <template>
-  <!-- What destructiveHint can produce: the same dialog for a draft and for a
-       send to 12,000 people. No preview, no reach, no rehearsal — only the
-       flag the metadata actually carries. -->
+  <!-- Faithful to what Nitrosend shows currently: a single cream bar, the tool 
+       name, and Allow / Deny. Drafting a campaign and sending it to 12,000 
+       people produce the same chrome. -->
   <section
-    class="animate-settle rounded-xl border border-line-strong bg-paper px-5 py-4"
-    aria-labelledby="confirm-heading"
+    class="animate-settle flex items-center gap-3 rounded-lg border border-caution/35 bg-caution-soft px-3.5 py-2.5"
+    :aria-label="`Allow ${prompt}`"
   >
-    <header class="flex items-baseline justify-between gap-4">
-      <h3 id="confirm-heading" class="text-2xs font-medium uppercase text-muted">
-        Allow this tool?
-      </h3>
-      <code class="shrink-0 text-2xs text-muted">{{ signature }}</code>
-    </header>
-
-    <p class="mt-3 text-sm">
-      <code class="text-sm">{{ action.tool }}</code>
-      is marked <span class="font-medium">destructive</span>. Allow it to run?
+    <p class="min-w-0 flex-1 font-mono text-sm text-ink">
+      Allow {{ prompt }}
     </p>
 
-    <div class="mt-4 flex items-center gap-2.5">
+    <div class="flex shrink-0 items-center gap-3">
       <button
         type="button"
-        class="rounded-lg border border-line-strong bg-paper px-3.5 py-2 text-sm font-medium transition-colors duration-150 hover:bg-surface"
-        @click="$emit('deny')"
-      >
-        Deny
-      </button>
-      <button
-        type="button"
-        class="rounded-lg bg-accent px-3.5 py-2 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-hover"
+        class="text-sm font-medium text-[oklch(55%_0.16_45)] transition-opacity duration-150 hover:opacity-80"
         @click="$emit('allow')"
       >
         Allow
+      </button>
+      <button
+        type="button"
+        class="text-sm font-medium text-danger transition-opacity duration-150 hover:opacity-80"
+        @click="$emit('deny')"
+      >
+        Deny
       </button>
     </div>
   </section>

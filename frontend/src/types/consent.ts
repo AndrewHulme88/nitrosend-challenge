@@ -11,7 +11,7 @@ export type Reach = 'internal' | 'nominated' | 'audience' | 'unknown'
 
 export type ConsentLevel = 'none' | 'notice' | 'confirm' | 'verify'
 
-// What today's destructiveHint boolean can express: ask, or don't.
+// What the current destructiveHint boolean can express: ask, or don't.
 export type CurrentConsentLevel = 'none' | 'confirm'
 
 export type ConsentMode = 'proposed' | 'current'
