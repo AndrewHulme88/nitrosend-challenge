@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { ConsentMode } from '@/types/consent'
 import type { Step } from '@/types/conversation'
 
@@ -21,6 +21,16 @@ export const useConversationStore = defineStore('conversation', () => {
   // switching modes can clear them without caring which tool was involved.
   const approved = ref<number[]>([])
   const denied = ref<number[]>([])
+
+  // Proposed mode gates the rest of the conversation until the operator
+  // retries. Current mode does not: it shows a terse failure, then a confused
+  // follow-up from the operator, then continues so the rest of the comparison
+  // is still visible.
+  const recovered = ref(false)
+
+  const failureIndex = computed(() =>
+    steps.value.findIndex((step) => step.type === 'action' && step.failure),
+  )
 
   async function load() {
     status.value = 'loading'
@@ -45,6 +55,7 @@ export const useConversationStore = defineStore('conversation', () => {
     dismissReason.value = null
     approved.value = []
     denied.value = []
+    recovered.value = false
   }
 
   // Switching modes resets decisions so the same call can be compared cleanly.
@@ -52,6 +63,34 @@ export const useConversationStore = defineStore('conversation', () => {
     if (next === mode.value) return
     mode.value = next
     resetOutcomes()
+  }
+
+  function isVisible(index: number) {
+    const step = steps.value[index]
+
+    if (step?.type === 'message' && step.only_in && step.only_in !== mode.value) {
+      return false
+    }
+
+    if (failureIndex.value === -1) return true
+
+    if (mode.value === 'proposed') {
+      if (!recovered.value) return index <= failureIndex.value
+      // After retry, drop the failed attempt — the successful call follows.
+      if (index === failureIndex.value) return false
+      return true
+    }
+
+    return true
+  }
+
+  function isPendingFailure(index: number) {
+    if (index !== failureIndex.value) return false
+    return mode.value === 'current' || !recovered.value
+  }
+
+  function retry() {
+    recovered.value = true
   }
 
   function sendTest() {
@@ -122,8 +161,13 @@ export const useConversationStore = defineStore('conversation', () => {
     dismissReason,
     approved,
     denied,
+    recovered,
+    failureIndex,
     load,
     setMode,
+    isVisible,
+    isPendingFailure,
+    retry,
     sendTest,
     send,
     dismiss,

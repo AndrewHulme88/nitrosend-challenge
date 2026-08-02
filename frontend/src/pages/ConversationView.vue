@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { useConversationStore } from '@/stores/conversation'
 import ChatMessage from '@/components/ChatMessage.vue'
 import AgentAction from '@/components/AgentAction.vue'
+import FailedAction from '@/components/FailedAction.vue'
 import ModeToggle from '@/components/ModeToggle.vue'
 import { callSignature } from '@/lib/call'
 import type { Action } from '@/types/conversation'
@@ -59,67 +60,76 @@ function isDenied(index: number) {
       </div>
 
       <div v-else class="space-y-6">
-        <div v-for="(step, index) in conversation.steps" :key="index">
-          <ChatMessage v-if="step.type === 'message'" :message="step" />
+        <template v-for="(step, index) in conversation.steps" :key="index">
+          <div v-if="conversation.isVisible(index)">
+            <ChatMessage v-if="step.type === 'message'" :message="step" />
 
-          <template v-else>
-            <p
-              v-if="step.send && conversation.sent"
-              class="animate-rise text-sm text-muted"
-            >
-              <span class="text-xs text-positive" aria-hidden="true">✓</span>
-              <template v-if="conversation.mode === 'proposed'">
-                Sent to
-                {{ new Intl.NumberFormat().format(step.send.recipients) }} people in
-                {{ step.send.audience }}.
-              </template>
-              <template v-else>
-                Allowed {{ callSignature(step.consequence) }}.
-              </template>
-            </p>
+            <template v-else>
+              <FailedAction
+                v-if="conversation.isPendingFailure(index) && step.failure"
+                :action="step as Action & { failure: NonNullable<Action['failure']> }"
+                :mode="conversation.mode"
+                @retry="conversation.retry()"
+              />
 
-            <p
-              v-else-if="step.send && conversation.dismissed"
-              class="animate-rise text-sm text-muted"
-            >
-              <template v-if="conversation.dismissReason">
-                Not sent — {{ conversation.dismissReason.toLowerCase() }}.
-                Nothing left the building; the draft is still there.
-              </template>
-              <template v-else>
-                Denied {{ callSignature(step.consequence) }}.
-              </template>
-            </p>
+              <p
+                v-else-if="step.send && conversation.sent"
+                class="animate-rise text-sm text-muted"
+              >
+                <span class="text-xs text-positive" aria-hidden="true">✓</span>
+                <template v-if="conversation.mode === 'proposed'">
+                  Sent to
+                  {{ new Intl.NumberFormat().format(step.send.recipients) }} people in
+                  {{ step.send.audience }}.
+                </template>
+                <template v-else>
+                  Allowed {{ callSignature(step.consequence) }}.
+                </template>
+              </p>
 
-            <p
-              v-else-if="isApproved(index)"
-              class="animate-rise text-sm text-muted"
-            >
-              <span class="text-xs text-positive" aria-hidden="true">✓</span>
-              Allowed {{ callSignature((step as Action).consequence) }}.
-            </p>
+              <p
+                v-else-if="step.send && conversation.dismissed"
+                class="animate-rise text-sm text-muted"
+              >
+                <template v-if="conversation.dismissReason">
+                  Not sent — {{ conversation.dismissReason.toLowerCase() }}.
+                  Nothing left the building; the draft is still there.
+                </template>
+                <template v-else>
+                  Denied {{ callSignature(step.consequence) }}.
+                </template>
+              </p>
 
-            <p
-              v-else-if="isDenied(index)"
-              class="animate-rise text-sm text-muted"
-            >
-              Denied {{ callSignature((step as Action).consequence) }}.
-            </p>
+              <p
+                v-else-if="isApproved(index)"
+                class="animate-rise text-sm text-muted"
+              >
+                <span class="text-xs text-positive" aria-hidden="true">✓</span>
+                Allowed {{ callSignature((step as Action).consequence) }}.
+              </p>
 
-            <AgentAction
-              v-else
-              :action="step"
-              :mode="conversation.mode"
-              :test-sent-to="conversation.testSentTo"
-              @test="conversation.sendTest()"
-              @send="conversation.send()"
-              @dismiss="conversation.dismiss($event)"
-              @revise="conversation.revise()"
-              @allow="conversation.allow(index)"
-              @deny="conversation.deny(index)"
-            />
-          </template>
-        </div>
+              <p
+                v-else-if="isDenied(index)"
+                class="animate-rise text-sm text-muted"
+              >
+                Denied {{ callSignature((step as Action).consequence) }}.
+              </p>
+
+              <AgentAction
+                v-else
+                :action="step"
+                :mode="conversation.mode"
+                :test-sent-to="conversation.testSentTo"
+                @test="conversation.sendTest()"
+                @send="conversation.send()"
+                @dismiss="conversation.dismiss($event)"
+                @revise="conversation.revise()"
+                @allow="conversation.allow(index)"
+                @deny="conversation.deny(index)"
+              />
+            </template>
+          </div>
+        </template>
       </div>
     </main>
   </div>

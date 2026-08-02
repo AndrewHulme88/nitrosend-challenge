@@ -12,6 +12,25 @@ steps:
     role: assistant
     text: Let me see who is on that list.
 
+  # Deliberate transient failure. Current mode only names the tool, so the
+  # operator has to ask what happened. Proposed mode explains and offers retry.
+  - type: action
+    tool: nitro_query
+    arguments:
+      entity: lists
+    summary: Read your contact lists
+    failure:
+      code: timeout
+      message: The lists request timed out before Nitrosend responded.
+      retriable: true
+
+  # Only shown under current metadata: the operator has to diagnose a dead
+  # end the interface would not explain.
+  - type: message
+    role: user
+    only_in: current
+    text: That failed. What happened? Try again.
+
   - type: action
     tool: nitro_query
     arguments:

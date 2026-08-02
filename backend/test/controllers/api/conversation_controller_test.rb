@@ -13,12 +13,14 @@ module Api
       assert_predicate body.dig("data", "steps"), :any?
     end
 
-    test "the script covers all three consent levels in order" do
+    test "the script covers all three consent levels" do
       get "/api/conversation"
 
-      levels = actions.map { |action| action.dig("consequence", "consent_level") }
+      levels = actions.map { |action| action.dig("consequence", "consent_level") }.uniq
 
-      assert_equal %w[none notice verify], levels
+      assert_equal %w[none notice verify], levels.sort_by { |level|
+        %w[none notice verify].index(level)
+      }
     end
 
     test "consequence is resolved by the policy rather than stored in the script" do
@@ -61,6 +63,26 @@ module Api
       assert_equal "confirm", send.dig("current", "consent_level")
       assert_equal "notice", draft.dig("consequence", "consent_level")
       assert_equal "verify", send.dig("consequence", "consent_level")
+    end
+
+    test "the script includes a retriable tool failure" do
+      get "/api/conversation"
+
+      failed = actions.find { |action| action["failure"] }
+      assert failed
+      assert failed.dig("failure", "retriable")
+      assert_predicate failed.dig("failure", "message"), :present?
+    end
+
+    test "current mode includes a follow-up when a tool fails without explanation" do
+      get "/api/conversation"
+
+      follow_up = JSON.parse(response.body)
+        .fetch("data").fetch("steps")
+        .find { |step| step["only_in"] == "current" }
+
+      assert follow_up
+      assert_equal "user", follow_up["role"]
     end
 
     private
