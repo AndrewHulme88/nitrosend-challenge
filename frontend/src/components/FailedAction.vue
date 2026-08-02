@@ -18,15 +18,16 @@ const toolLabel = computed(() =>
 </script>
 
 <template>
-  <!-- Current: same cream bar as Allow/Deny, still only the tool name and
-       "failed". No cause, no next step. -->
-  <section
+  <!-- Current: the tool name and the word failed. No cause, no next step.
+       Proposed: the cause, and a retry when the failure is retriable. -->
+  <div
     v-if="mode === 'current'"
     class="animate-rise rounded-lg border border-caution/35 bg-caution-soft px-3.5 py-2.5"
     :aria-label="`${action.tool} failed`"
   >
-    <p class="font-mono text-sm text-ink">{{ action.tool }} failed</p>
-  </section>
+    <span class="text-xs text-danger" aria-hidden="true">✕</span>
+    <span>{{ action.tool }} failed</span>
+  </div>
 
   <section
     v-else

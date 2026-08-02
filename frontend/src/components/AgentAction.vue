@@ -21,6 +21,7 @@ defineEmits<{
   discard: []
   allow: []
   deny: []
+  preview: []
 }>()
 
 // Proposed mode is graded by ConsentPolicy. Current mode is graded by the
@@ -54,5 +55,6 @@ const sending = computed(() =>
     :action="action"
     @allow="$emit('allow')"
     @deny="$emit('deny')"
+    @preview="$emit('preview')"
   />
 </template>

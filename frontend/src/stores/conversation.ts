@@ -21,6 +21,7 @@ export const useConversationStore = defineStore('conversation', () => {
   const dismissed = ref(false)
   const dismissReason = ref<string | null>(null)
   const draftDiscarded = ref(false)
+  const previewLinkOpened = ref(false)
 
   // Current-mode approvals for non-send destructive tools. Indexed by step so
   // switching modes can clear them without caring which tool was involved.
@@ -53,6 +54,20 @@ export const useConversationStore = defineStore('conversation', () => {
     return Math.max(steps.value.length - 1, 0)
   })
 
+  // The framing epilogue waits until the consequential send has been decided
+  // (or the draft undone), so it summarises an experience rather than a half
+  // transcript.
+  const isComplete = computed(
+    () => sent.value || dismissed.value || draftDiscarded.value,
+  )
+
+  const completionOutcome = computed<'sent' | 'dismissed' | 'discarded' | null>(() => {
+    if (draftDiscarded.value) return 'discarded'
+    if (dismissed.value) return 'dismissed'
+    if (sent.value) return 'sent'
+    return null
+  })
+
   async function load() {
     status.value = 'loading'
 
@@ -76,6 +91,7 @@ export const useConversationStore = defineStore('conversation', () => {
     dismissed.value = false
     dismissReason.value = null
     draftDiscarded.value = false
+    previewLinkOpened.value = false
     approved.value = []
     denied.value = []
     recovered.value = false
@@ -161,6 +177,10 @@ export const useConversationStore = defineStore('conversation', () => {
     draftDiscarded.value = true
   }
 
+  function openPreviewLink() {
+    previewLinkOpened.value = true
+  }
+
   function allow(index: number) {
     const step = steps.value[index]
     if (step?.type === 'action' && step.send) {
@@ -214,11 +234,14 @@ export const useConversationStore = defineStore('conversation', () => {
     dismissed,
     dismissReason,
     draftDiscarded,
+    previewLinkOpened,
     approved,
     denied,
     recovered,
     failureIndex,
     promptIndices,
+    isComplete,
+    completionOutcome,
     load,
     setMode,
     isVisible,
@@ -230,6 +253,7 @@ export const useConversationStore = defineStore('conversation', () => {
     send,
     dismiss,
     discardDraft,
+    openPreviewLink,
     allow,
     deny,
     revise,
