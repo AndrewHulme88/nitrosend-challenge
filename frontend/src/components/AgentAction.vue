@@ -18,6 +18,7 @@ defineEmits<{
   test: []
   dismiss: [reason: string]
   revise: []
+  discard: []
   allow: []
   deny: []
 }>()
@@ -46,6 +47,7 @@ const sending = computed(() =>
     @test="$emit('test')"
     @dismiss="(reason) => $emit('dismiss', reason)"
     @revise="$emit('revise')"
+    @discard="$emit('discard')"
   />
   <GenericConfirm
     v-else-if="mode === 'current' && level === 'confirm'"

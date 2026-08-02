@@ -13,6 +13,7 @@ const emit = defineEmits<{
   test: []
   dismiss: [reason: string]
   revise: []
+  discard: []
 }>()
 
 const details = computed(() => props.action.send)
@@ -166,6 +167,13 @@ const reasons = [
           @click="choosingReason = true"
         >
           Not now
+        </button>
+        <button
+          type="button"
+          class="text-sm text-muted transition-colors duration-150 hover:text-ink"
+          @click="emit('discard')"
+        >
+          Discard the draft
         </button>
       </div>
 

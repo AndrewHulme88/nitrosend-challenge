@@ -8,7 +8,7 @@ type Status = 'loading' | 'ready' | 'error'
 export const useConversationStore = defineStore('conversation', () => {
   const steps = ref<Step[]>([])
   const status = ref<Status>('loading')
-  const mode = ref<ConsentMode>('proposed')
+  const mode = ref<ConsentMode>('current')
 
   // How many user prompts have been sent. The next one is shown with a Send
   // button; everything after it stays hidden until that Send is pressed.
@@ -20,6 +20,7 @@ export const useConversationStore = defineStore('conversation', () => {
   const sent = ref(false)
   const dismissed = ref(false)
   const dismissReason = ref<string | null>(null)
+  const draftDiscarded = ref(false)
 
   // Current-mode approvals for non-send destructive tools. Indexed by step so
   // switching modes can clear them without caring which tool was involved.
@@ -74,6 +75,7 @@ export const useConversationStore = defineStore('conversation', () => {
     sent.value = false
     dismissed.value = false
     dismissReason.value = null
+    draftDiscarded.value = false
     approved.value = []
     denied.value = []
     recovered.value = false
@@ -111,6 +113,14 @@ export const useConversationStore = defineStore('conversation', () => {
       return index === promptIndices.value[0]
     }
 
+    // Discard ends the thread at the draft — no "ready to send" and no panel.
+    if (draftDiscarded.value) {
+      const draftIndex = steps.value.findIndex(
+        (s) => s.type === 'action' && s.consequence.consent_level === 'notice',
+      )
+      if (draftIndex !== -1 && index > draftIndex) return false
+    }
+
     if (failureIndex.value === -1) return true
 
     if (mode.value === 'proposed') {
@@ -145,6 +155,10 @@ export const useConversationStore = defineStore('conversation', () => {
   function dismiss(reason: string) {
     dismissReason.value = reason
     dismissed.value = true
+  }
+
+  function discardDraft() {
+    draftDiscarded.value = true
   }
 
   function allow(index: number) {
@@ -199,6 +213,7 @@ export const useConversationStore = defineStore('conversation', () => {
     sent,
     dismissed,
     dismissReason,
+    draftDiscarded,
     approved,
     denied,
     recovered,
@@ -214,6 +229,7 @@ export const useConversationStore = defineStore('conversation', () => {
     sendTest,
     send,
     dismiss,
+    discardDraft,
     allow,
     deny,
     revise,

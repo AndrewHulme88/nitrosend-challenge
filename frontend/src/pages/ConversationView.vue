@@ -19,6 +19,10 @@ function isApproved(index: number) {
 function isDenied(index: number) {
   return conversation.denied.includes(index)
 }
+
+function isDraftAction(step: Action) {
+  return step.consequence.consent_level === 'notice'
+}
 </script>
 
 <template>
@@ -77,6 +81,14 @@ function isDenied(index: number) {
                 @retry="conversation.retry()"
               />
 
+              <!-- Discard rewrites the draft record and stops the thread there. -->
+              <p
+                v-else-if="isDraftAction(step) && conversation.draftDiscarded"
+                class="animate-rise text-sm text-muted"
+              >
+                Draft discarded. Nothing was sent.
+              </p>
+
               <p
                 v-else-if="step.send && conversation.sent"
                 class="animate-rise text-sm text-muted"
@@ -129,6 +141,7 @@ function isDenied(index: number) {
                 @send="conversation.send()"
                 @dismiss="conversation.dismiss($event)"
                 @revise="conversation.revise()"
+                @discard="conversation.discardDraft()"
                 @allow="conversation.allow(index)"
                 @deny="conversation.deny(index)"
               />

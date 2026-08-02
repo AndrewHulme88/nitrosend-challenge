@@ -50,7 +50,6 @@ steps:
       name: Winter sale — last call
     summary: Drafted “Last call — winter kit, 30% off”
     result: Saved as a draft. Nothing has been sent.
-    undo: Discard the draft
 
   - type: message
     role: assistant

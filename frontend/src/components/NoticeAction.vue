@@ -9,23 +9,15 @@ const signature = computed(() => callSignature(props.action.consequence))
 </script>
 
 <template>
-  <!-- Reversible work is done first and reported after. Asking permission to
-       write a draft would spend the operator's attention on something they can
-       undo, and leave them with less of it for the send that they cannot. -->
-  <section class="animate-rise rounded-xl border border-line bg-paper px-4 py-3.5">
-    <header class="flex items-baseline justify-between gap-4">
-      <h3 class="text-sm font-medium">{{ action.summary }}</h3>
-      <code class="shrink-0 text-2xs text-muted">{{ signature }}</code>
-    </header>
-
-    <p v-if="action.result" class="mt-1 text-sm text-muted">{{ action.result }}</p>
-
-    <button
-      v-if="action.undo"
-      type="button"
-      class="mt-2.5 text-sm font-medium text-accent transition-colors duration-150 hover:text-accent-hover"
-    >
-      {{ action.undo }}
-    </button>
-  </section>
+  <!-- Reversible work is done first and reported after — a record, not a
+       decision. Undo lives on the send panel with the other choices, so this
+       line never looks like a prompt waiting for an answer. -->
+  <div class="animate-rise flex items-baseline gap-2.5 text-sm text-muted">
+    <span class="text-xs text-positive" aria-hidden="true">✓</span>
+    <span>
+      {{ action.summary }}
+      <template v-if="action.result">— {{ action.result }}</template>
+    </span>
+    <code class="ml-auto shrink-0 text-2xs">{{ signature }}</code>
+  </div>
 </template>
