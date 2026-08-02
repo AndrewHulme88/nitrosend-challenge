@@ -10,6 +10,10 @@ export const useConversationStore = defineStore('conversation', () => {
   const status = ref<Status>('loading')
   const mode = ref<ConsentMode>('proposed')
 
+  // How many user prompts have been sent. The next one is shown with a Send
+  // button; everything after it stays hidden until that Send is pressed.
+  const promptsSent = ref(0)
+
   // Outcomes of the pending send, kept here rather than in the panel so the
   // conversation can respond to them.
   const testSentTo = ref<string | null>(null)
@@ -32,6 +36,22 @@ export const useConversationStore = defineStore('conversation', () => {
     steps.value.findIndex((step) => step.type === 'action' && step.failure),
   )
 
+  // User prompts visible in the active mode, in script order.
+  const promptIndices = computed(() =>
+    steps.value.flatMap((step, index) => {
+      if (step.type !== 'message' || step.role !== 'user') return []
+      if (step.only_in && step.only_in !== mode.value) return []
+      return [index]
+    }),
+  )
+
+  // Show through the next unsent prompt, or through the end once all are sent.
+  const revealCeiling = computed(() => {
+    const prompts = promptIndices.value
+    if (promptsSent.value < prompts.length) return prompts[promptsSent.value]
+    return Math.max(steps.value.length - 1, 0)
+  })
+
   async function load() {
     status.value = 'loading'
 
@@ -49,6 +69,7 @@ export const useConversationStore = defineStore('conversation', () => {
   }
 
   function resetOutcomes() {
+    promptsSent.value = 0
     testSentTo.value = null
     sent.value = false
     dismissed.value = false
@@ -65,11 +86,29 @@ export const useConversationStore = defineStore('conversation', () => {
     resetOutcomes()
   }
 
+  function isPendingPrompt(index: number) {
+    const prompts = promptIndices.value
+    return promptsSent.value < prompts.length && index === prompts[promptsSent.value]
+  }
+
+  function sendPrompt() {
+    if (promptsSent.value < promptIndices.value.length) {
+      promptsSent.value += 1
+    }
+  }
+
   function isVisible(index: number) {
     const step = steps.value[index]
 
     if (step?.type === 'message' && step.only_in && step.only_in !== mode.value) {
       return false
+    }
+
+    if (index > revealCeiling.value) return false
+
+    // Before the first Send, only the opening prompt is on screen.
+    if (promptsSent.value === 0) {
+      return index === promptIndices.value[0]
     }
 
     if (failureIndex.value === -1) return true
@@ -155,6 +194,7 @@ export const useConversationStore = defineStore('conversation', () => {
     steps,
     status,
     mode,
+    promptsSent,
     testSentTo,
     sent,
     dismissed,
@@ -163,10 +203,13 @@ export const useConversationStore = defineStore('conversation', () => {
     denied,
     recovered,
     failureIndex,
+    promptIndices,
     load,
     setMode,
     isVisible,
+    isPendingPrompt,
     isPendingFailure,
+    sendPrompt,
     retry,
     sendTest,
     send,

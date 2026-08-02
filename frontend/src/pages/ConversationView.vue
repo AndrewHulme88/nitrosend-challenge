@@ -62,7 +62,12 @@ function isDenied(index: number) {
       <div v-else class="space-y-6">
         <template v-for="(step, index) in conversation.steps" :key="index">
           <div v-if="conversation.isVisible(index)">
-            <ChatMessage v-if="step.type === 'message'" :message="step" />
+            <ChatMessage
+              v-if="step.type === 'message'"
+              :message="step"
+              :pending="conversation.isPendingPrompt(index)"
+              @send="conversation.sendPrompt()"
+            />
 
             <template v-else>
               <FailedAction
