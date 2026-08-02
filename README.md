@@ -1,19 +1,41 @@
 # Nitrosend Product Challenge
 
-A product and UX prototype created as part of the Nitrosend Product Engineer application process.
+A product and UX prototype for the Nitrosend Product Engineer application.
+
+It demonstrates graded consent for agent tool calls: the current version's
+`destructiveHint` boolean versus a consequence-based model (reversibility and
+reach `none` / `notice` / `confirm` / `verify`). The same scripted winter-sale
+conversation is shown under both, with a Current / Proposed toggle.
+
+**Live demo:** [https://nitrosend-challenge.fly.dev](https://nitrosend-challenge.fly.dev)
+
+## What to look for
+
+1. Start on **Current** — Allow/Deny bars, terse failures, preview as a link out
+   of the chat.
+2. Flip to **Proposed** — quiet reads, a draft that says nothing was sent, an
+   in-thread email preview, blockers explained before send controls appear.
+3. Finish a path (send, not now, or discard) - the closing note summarises the
+   difference.
 
 ## Stack
 
-- Rails 8.1, API only
-- Vue 3, TypeScript, Vite, Pinia, Tailwind CSS
+- Rails 8.1 API (`backend/`)
+- Vue 3, TypeScript, Vite, Pinia, Tailwind CSS (`frontend/`)
 
-There is no database. The prototype's state lives in the browser and the API is
-stateless, so Postgres would have been a dependency with nothing in it.
+No database. Conversation state lives in the browser; the API is stateless and
+grades each tool call from YAML manifests at request time.
 
 ## Structure
 
-- `backend` — Rails API, which also serves the built frontend
-- `frontend` — Vue application
+| Path | Role |
+| --- | --- |
+| `backend/` | Rails API; also serves the built SPA from `public/` |
+| `frontend/` | Vue app |
+| `backend/config/consent_manifest.yml` | Proposed consequence metadata |
+| `backend/config/current_annotations.yml` | Current `destructiveHint` grading |
+| `backend/config/conversation.yml` | Scripted demo conversation |
+| `fly.toml` | Fly app config (machine stays on) |
 
 ## Local development
 
@@ -27,32 +49,35 @@ cd backend && bin/setup && bin/rails server
 cd frontend && npm install && npm run dev
 ```
 
-The frontend runs on port 5173 and proxies `/api` to Rails on port 3000, so both
-are same-origin in development as well as in production.
+Vite proxies `/api` to Rails on port 3000, so development is same-origin like
+production. Open the URL Vite prints (often `http://localhost:5173`).
 
 ## Tests and checks
 
 ```bash
-cd backend && bin/rails test && bin/rubocop && bin/brakeman
+cd backend && bin/ci
 ```
 
 ```bash
 cd frontend && npm run build
 ```
 
-The frontend build type-checks before bundling, so a type error fails the build.
-CI runs all of the above on every push.
+`bin/ci` runs setup, RuboCop, bundler-audit, Brakeman, and the Rails tests.
+The frontend build type-checks before bundling. GitHub Actions runs the same
+checks on every push.
 
 ## Deployment
 
-One container, built by the `Dockerfile`: Vite compiles the frontend into
-`backend/public`, and Thruster serves those files and forwards everything else
-to Rails. A single origin means no CORS and no separate frontend host.
+One container (`Dockerfile`): Vite builds into `backend/public`, Thruster serves
+static assets and forwards the rest to Rails. Single origin — no CORS, no
+separate frontend host.
 
-It runs on Fly, configured in `fly.toml` to keep one machine always on. Fly
-stops idle machines by default, which leaves the first visitor after a quiet
-period waiting on a boot.
+Fly keeps one machine always on (`auto_stop_machines = "off"`) so a cold link
+does not wait on a boot.
 
 ```bash
 fly deploy
 ```
+
+App: `nitrosend-challenge` · Region: `syd` · URL:
+[https://nitrosend-challenge.fly.dev](https://nitrosend-challenge.fly.dev)
