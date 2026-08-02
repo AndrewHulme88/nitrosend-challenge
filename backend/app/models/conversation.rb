@@ -14,6 +14,10 @@ class Conversation
     end
 
     def script
+      # Reload in development so editing the fixture is reflected without a
+      # server restart. Production keeps the memoised copy.
+      return YAML.safe_load_file(PATH) if Rails.env.development?
+
       @script ||= YAML.safe_load_file(PATH).freeze
     end
 

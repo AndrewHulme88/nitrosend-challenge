@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { callSignature } from '@/lib/call'
 import type { Action, SendDetails } from '@/types/conversation'
 
@@ -8,10 +8,11 @@ const props = defineProps<{
   testSentTo: string | null
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   send: []
   test: []
-  dismiss: []
+  dismiss: [reason: string]
+  revise: []
 }>()
 
 const details = computed(() => props.action.send)
@@ -23,6 +24,16 @@ const recipients = computed(() =>
 )
 
 const blocking = computed(() => details.value.checks.filter((check) => !check.ok))
+
+// Choosing a reason is the difference between closing a dialog and leaving a
+// decision in the transcript. Preset options keep it one click, not a form.
+const choosingReason = ref(false)
+
+const reasons = [
+  'Subject needs another pass',
+  'Wrong audience for this',
+  'Just reviewing for now',
+] as const
 </script>
 
 <template>
@@ -72,6 +83,28 @@ const blocking = computed(() => details.value.checks.filter((check) => !check.ok
       </ul>
     </div>
 
+    <!-- A failed check is an explanation, not a greyed-out button. Colour is
+         spent here because something is actually wrong. -->
+    <div
+      v-if="blocking.length"
+      class="border-b border-line bg-danger-soft px-5 py-3.5"
+    >
+      <p class="text-sm">
+        <template v-if="blocking[0].detail">
+          {{ blocking[0].label }} — {{ blocking[0].detail }}.
+        </template>
+        <template v-else>{{ blocking[0].label }}.</template>
+        This cannot be sent as it stands.
+      </p>
+      <button
+        type="button"
+        class="mt-2 text-sm font-medium text-accent transition-colors duration-150 hover:text-accent-hover"
+        @click="emit('revise')"
+      >
+        Ask to revise the draft
+      </button>
+    </div>
+
     <!-- The fail-closed case, surfaced rather than swallowed. If the manifest
          does not say what an operation does, saying so is more honest than
          quietly treating it as routine. -->
@@ -89,11 +122,33 @@ const blocking = computed(() => details.value.checks.filter((check) => !check.ok
         in {{ details.audience }}, and cannot be recalled.
       </p>
 
-      <div class="mt-4 flex flex-wrap items-center gap-2.5">
+      <div v-if="choosingReason" class="mt-4">
+        <p class="text-sm text-muted">Why hold this back?</p>
+        <div class="mt-2.5 flex flex-wrap gap-2">
+          <button
+            v-for="reason in reasons"
+            :key="reason"
+            type="button"
+            class="rounded-lg border border-line-strong bg-paper px-3 py-1.5 text-sm transition-colors duration-150 hover:bg-surface"
+            @click="emit('dismiss', reason)"
+          >
+            {{ reason }}
+          </button>
+        </div>
+        <button
+          type="button"
+          class="mt-3 text-sm text-muted transition-colors duration-150 hover:text-ink"
+          @click="choosingReason = false"
+        >
+          Keep reviewing
+        </button>
+      </div>
+
+      <div v-else class="mt-4 flex flex-wrap items-center gap-2.5">
         <button
           type="button"
           class="rounded-lg border border-line-strong bg-paper px-3.5 py-2 text-sm font-medium transition-colors duration-150 hover:bg-surface"
-          @click="$emit('test')"
+          @click="emit('test')"
         >
           Send a test first
         </button>
@@ -101,24 +156,22 @@ const blocking = computed(() => details.value.checks.filter((check) => !check.ok
           type="button"
           class="rounded-lg bg-accent px-3.5 py-2 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-40"
           :disabled="blocking.length > 0"
-          @click="$emit('send')"
+          @click="emit('send')"
         >
           Send to {{ recipients }} people
         </button>
         <button
           type="button"
           class="ml-auto text-sm text-muted transition-colors duration-150 hover:text-ink"
-          @click="$emit('dismiss')"
+          @click="choosingReason = true"
         >
           Not now
         </button>
       </div>
 
-      <!-- Naming the omission is more useful than blocking on it. The operator
-           keeps the decision; they just cannot make it unknowingly. -->
-      <p class="mt-3 text-sm text-muted">
+      <p v-if="!choosingReason" class="mt-3 text-sm text-muted">
         <template v-if="blocking.length">
-          {{ blocking[0].label }} before this can be sent.
+          Fix the check above before this can be sent.
         </template>
         <template v-else-if="testSentTo">
           You sent a test of this to {{ testSentTo }}.

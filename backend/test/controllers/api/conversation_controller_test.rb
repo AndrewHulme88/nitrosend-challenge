@@ -41,6 +41,16 @@ module Api
       end
     end
 
+    test "the send action includes a failing readiness check" do
+      # The failure state is part of the demo: a check that blocks the send and
+      # must be explained, not only greying out a button.
+      get "/api/conversation"
+
+      send = actions.find { |action| action["send"] }
+      assert send
+      assert send.fetch("send").fetch("checks").any? { |check| check["ok"] == false }
+    end
+
     private
 
     def actions

@@ -55,7 +55,8 @@ onMounted(() => conversation.load())
               v-else-if="step.send && conversation.dismissed"
               class="animate-rise text-sm text-muted"
             >
-              Not sent. The draft is still there when you want it.
+              Not sent — {{ conversation.dismissReason?.toLowerCase() }}.
+              Nothing left the building; the draft is still there.
             </p>
 
             <AgentAction
@@ -64,7 +65,8 @@ onMounted(() => conversation.load())
               :test-sent-to="conversation.testSentTo"
               @test="conversation.sendTest()"
               @send="conversation.send()"
-              @dismiss="conversation.dismiss()"
+              @dismiss="conversation.dismiss($event)"
+              @revise="conversation.revise()"
             />
           </template>
         </div>

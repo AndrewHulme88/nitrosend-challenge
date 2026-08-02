@@ -13,7 +13,8 @@ const props = defineProps<{
 defineEmits<{
   send: []
   test: []
-  dismiss: []
+  dismiss: [reason: string]
+  revise: []
 }>()
 
 // One dispatch point, so how much an action asks of the operator is decided by
@@ -34,6 +35,7 @@ const sending = computed(() =>
     :test-sent-to="testSentTo"
     @send="$emit('send')"
     @test="$emit('test')"
-    @dismiss="$emit('dismiss')"
+    @dismiss="(reason) => $emit('dismiss', reason)"
+    @revise="$emit('revise')"
   />
 </template>

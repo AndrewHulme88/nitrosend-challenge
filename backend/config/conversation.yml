@@ -58,6 +58,9 @@ steps:
           ok: true
         - label: Unsubscribe link present
           ok: true
-        - label: Spam score 1.2
-          detail: below the 5.0 threshold
-          ok: true
+        # One deliberate failure. The panel must explain the block rather than
+        # only greying out the button, and the operator must be able to ask for
+        # a revision rather than being stuck.
+        - label: Spam score 6.4
+          detail: above the 5.0 threshold
+          ok: false
