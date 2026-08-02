@@ -49,23 +49,52 @@ const reasons = [
       <code class="shrink-0 text-2xs text-muted">{{ signature }}</code>
     </header>
 
-    <!-- Preview first. The thing being sent is the subject of the decision, so
-         it comes before the controls rather than behind a "preview" link. -->
+    <!-- One email frame: headers first, then the message. No second title
+         competing with the subject outside the card. -->
     <div class="border-b border-line bg-sunken px-5 py-5">
-      <p class="text-2xs font-medium uppercase text-muted">Subject</p>
-      <p class="mt-1.5 text-lg font-medium tracking-tight">{{ details.subject }}</p>
+      <p class="text-2xs font-medium uppercase tracking-wider text-muted">
+        Email preview
+      </p>
 
-      <div class="mt-4 rounded-lg border border-line bg-paper p-4">
-        <p class="text-lg font-semibold tracking-tight">{{ details.preview.heading }}</p>
-        <p class="mt-2 text-sm text-muted">{{ details.preview.body }}</p>
-        <p class="mt-4 inline-block rounded-md bg-ink px-3 py-1.5 text-xs font-medium text-paper">
-          {{ details.preview.cta }}
-        </p>
-      </div>
+      <article
+        class="mt-3 overflow-hidden rounded-lg border border-line bg-paper"
+        aria-label="Campaign email preview"
+      >
+        <dl class="space-y-2 border-b border-line px-4 py-3 text-sm">
+          <div class="flex gap-3">
+            <dt class="w-14 shrink-0 text-muted">To</dt>
+            <dd class="min-w-0 text-ink">
+              {{ details.audience }}
+              <span class="text-muted">· {{ recipients }} people</span>
+            </dd>
+          </div>
+          <div class="flex gap-3">
+            <dt class="w-14 shrink-0 text-muted">Subject</dt>
+            <dd class="min-w-0 font-medium text-ink">{{ details.subject }}</dd>
+          </div>
+        </dl>
+
+        <div class="px-4 py-4">
+          <p class="text-base font-semibold tracking-tight">
+            {{ details.preview.heading }}
+          </p>
+          <p class="mt-2 text-sm leading-relaxed text-muted">
+            {{ details.preview.body }}
+          </p>
+          <p
+            class="mt-4 inline-block rounded-md bg-ink px-3 py-1.5 text-xs font-medium text-paper"
+          >
+            {{ details.preview.cta }}
+          </p>
+        </div>
+      </article>
     </div>
 
     <div v-if="details.checks.length" class="border-b border-line px-5 py-4">
-      <ul class="space-y-2">
+      <p class="text-2xs font-medium uppercase tracking-wider text-muted">
+        Before sending
+      </p>
+      <ul class="mt-2.5 space-y-2">
         <li
           v-for="check in details.checks"
           :key="check.label"
@@ -123,71 +152,71 @@ const reasons = [
         in {{ details.audience }}, and cannot be recalled.
       </p>
 
-      <div v-if="choosingReason" class="mt-4">
-        <p class="text-sm text-muted">Why hold this back?</p>
-        <div class="mt-2.5 flex flex-wrap gap-2">
+      <!-- Send controls wait until checks are clear. A disabled Send beside
+           "revise first" undercuts the block; the decision comes after. -->
+      <template v-if="!blocking.length">
+        <div v-if="choosingReason" class="mt-4">
+          <p class="text-sm text-muted">Why hold this back?</p>
+          <div class="mt-2.5 flex flex-wrap gap-2">
+            <button
+              v-for="reason in reasons"
+              :key="reason"
+              type="button"
+              class="rounded-lg border border-line-strong bg-paper px-3 py-1.5 text-sm transition-colors duration-150 hover:bg-surface"
+              @click="emit('dismiss', reason)"
+            >
+              {{ reason }}
+            </button>
+          </div>
           <button
-            v-for="reason in reasons"
-            :key="reason"
             type="button"
-            class="rounded-lg border border-line-strong bg-paper px-3 py-1.5 text-sm transition-colors duration-150 hover:bg-surface"
-            @click="emit('dismiss', reason)"
+            class="mt-3 text-sm text-muted transition-colors duration-150 hover:text-ink"
+            @click="choosingReason = false"
           >
-            {{ reason }}
+            Keep reviewing
           </button>
         </div>
-        <button
-          type="button"
-          class="mt-3 text-sm text-muted transition-colors duration-150 hover:text-ink"
-          @click="choosingReason = false"
-        >
-          Keep reviewing
-        </button>
-      </div>
 
-      <div v-else class="mt-4 flex flex-wrap items-center gap-2.5">
-        <button
-          type="button"
-          class="rounded-lg border border-line-strong bg-paper px-3.5 py-2 text-sm font-medium transition-colors duration-150 hover:bg-surface"
-          @click="emit('test')"
-        >
-          Send a test first
-        </button>
-        <button
-          type="button"
-          class="rounded-lg bg-accent px-3.5 py-2 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-40"
-          :disabled="blocking.length > 0"
-          @click="emit('send')"
-        >
-          Send to {{ recipients }} people
-        </button>
-        <button
-          type="button"
-          class="ml-auto text-sm text-muted transition-colors duration-150 hover:text-ink"
-          @click="choosingReason = true"
-        >
-          Not now
-        </button>
-        <button
-          type="button"
-          class="text-sm text-muted transition-colors duration-150 hover:text-ink"
-          @click="emit('discard')"
-        >
-          Discard the draft
-        </button>
-      </div>
+        <div v-else class="mt-4 flex flex-wrap items-center gap-2.5">
+          <button
+            type="button"
+            class="rounded-lg border border-line-strong bg-paper px-3.5 py-2 text-sm font-medium transition-colors duration-150 hover:bg-surface"
+            @click="emit('test')"
+          >
+            Send a test first
+          </button>
+          <button
+            type="button"
+            class="rounded-lg bg-accent px-3.5 py-2 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-hover"
+            @click="emit('send')"
+          >
+            Send to {{ recipients }} people
+          </button>
+          <button
+            type="button"
+            class="ml-auto text-sm text-muted transition-colors duration-150 hover:text-ink"
+            @click="choosingReason = true"
+          >
+            Not now
+          </button>
+          <button
+            type="button"
+            class="text-sm text-muted transition-colors duration-150 hover:text-ink"
+            @click="emit('discard')"
+          >
+            Discard the draft
+          </button>
+        </div>
 
-      <p v-if="!choosingReason" class="mt-3 text-sm text-muted">
-        <template v-if="blocking.length">
-          Fix the check above before this can be sent.
-        </template>
-        <template v-else-if="testSentTo">
-          You sent a test of this to {{ testSentTo }}.
-        </template>
-        <template v-else>
-          You have not sent a test of this yet.
-        </template>
-      </p>
+        <p v-if="!choosingReason" class="mt-3 text-sm text-muted">
+          <template v-if="testSentTo">
+            You sent a test of this to {{ testSentTo }}.
+          </template>
+          <template v-else>
+            You have not sent a test of this yet.
+          </template>
+        </p>
+      </template>
     </footer>
   </section>
 </template>
