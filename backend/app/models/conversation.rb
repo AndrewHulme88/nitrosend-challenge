@@ -24,11 +24,12 @@ class Conversation
     private
 
     def graded(step)
+      tool = step.fetch("tool")
+      arguments = step["arguments"] || {}
+
       step.merge(
-        "consequence" => ConsentPolicy.resolve(
-          tool: step.fetch("tool"),
-          arguments: step["arguments"] || {}
-        )
+        "consequence" => ConsentPolicy.resolve(tool: tool, arguments: arguments),
+        "current" => CurrentConsent.resolve(tool: tool)
       )
     end
   end

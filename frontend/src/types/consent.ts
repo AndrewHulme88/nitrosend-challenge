@@ -11,6 +11,11 @@ export type Reach = 'internal' | 'nominated' | 'audience' | 'unknown'
 
 export type ConsentLevel = 'none' | 'notice' | 'confirm' | 'verify'
 
+// What today's destructiveHint boolean can express: ask, or don't.
+export type CurrentConsentLevel = 'none' | 'confirm'
+
+export type ConsentMode = 'proposed' | 'current'
+
 export interface Consequence {
   tool: string
   operation: string | null
@@ -20,6 +25,13 @@ export interface Consequence {
   preview_with: string | null
   rehearse_with: string | null
   declared: boolean
+}
+
+export interface CurrentAnnotation {
+  tool: string
+  read_only_hint: boolean
+  destructive_hint: boolean
+  consent_level: CurrentConsentLevel
 }
 
 export interface ReadinessCheck {

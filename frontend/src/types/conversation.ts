@@ -1,4 +1,4 @@
-import type { Consequence, ReadinessCheck } from '@/types/consent'
+import type { Consequence, CurrentAnnotation, ReadinessCheck } from '@/types/consent'
 
 export interface Message {
   type: 'message'
@@ -27,6 +27,7 @@ export interface Action {
   undo?: string
   send?: SendDetails
   consequence: Consequence
+  current: CurrentAnnotation
 }
 
 export type Step = Message | Action

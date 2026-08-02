@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import type { ConsentMode } from '@/types/consent'
 import type { Step } from '@/types/conversation'
 
 type Status = 'loading' | 'ready' | 'error'
@@ -7,6 +8,7 @@ type Status = 'loading' | 'ready' | 'error'
 export const useConversationStore = defineStore('conversation', () => {
   const steps = ref<Step[]>([])
   const status = ref<Status>('loading')
+  const mode = ref<ConsentMode>('proposed')
 
   // Outcomes of the pending send, kept here rather than in the panel so the
   // conversation can respond to them.
@@ -14,6 +16,11 @@ export const useConversationStore = defineStore('conversation', () => {
   const sent = ref(false)
   const dismissed = ref(false)
   const dismissReason = ref<string | null>(null)
+
+  // Current-mode approvals for non-send destructive tools. Indexed by step so
+  // switching modes can clear them without caring which tool was involved.
+  const approved = ref<number[]>([])
+  const denied = ref<number[]>([])
 
   async function load() {
     status.value = 'loading'
@@ -31,6 +38,22 @@ export const useConversationStore = defineStore('conversation', () => {
     }
   }
 
+  function resetOutcomes() {
+    testSentTo.value = null
+    sent.value = false
+    dismissed.value = false
+    dismissReason.value = null
+    approved.value = []
+    denied.value = []
+  }
+
+  // Switching modes resets decisions so the same call can be compared cleanly.
+  function setMode(next: ConsentMode) {
+    if (next === mode.value) return
+    mode.value = next
+    resetOutcomes()
+  }
+
   function sendTest() {
     testSentTo.value = 'andrew@lumenkit.com'
   }
@@ -46,7 +69,32 @@ export const useConversationStore = defineStore('conversation', () => {
     dismissed.value = true
   }
 
-  // Clears the deliberate spam score failure so the happy path is still
+  function allow(index: number) {
+    const step = steps.value[index]
+    if (step?.type === 'action' && step.send) {
+      sent.value = true
+      return
+    }
+
+    if (!approved.value.includes(index)) {
+      approved.value = [...approved.value, index]
+    }
+  }
+
+  function deny(index: number) {
+    const step = steps.value[index]
+    if (step?.type === 'action' && step.send) {
+      dismissReason.value = null
+      dismissed.value = true
+      return
+    }
+
+    if (!denied.value.includes(index)) {
+      denied.value = [...denied.value, index]
+    }
+  }
+
+  // Clears the deliberate spam-score failure so the happy path is still
   // reachable after the blocked state has been shown.
   function revise() {
     for (const step of steps.value) {
@@ -67,14 +115,20 @@ export const useConversationStore = defineStore('conversation', () => {
   return {
     steps,
     status,
+    mode,
     testSentTo,
     sent,
     dismissed,
     dismissReason,
+    approved,
+    denied,
     load,
+    setMode,
     sendTest,
     send,
     dismiss,
+    allow,
+    deny,
     revise,
   }
 })

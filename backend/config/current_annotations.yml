@@ -1,0 +1,24 @@
+# Real MCP annotations for the tools in the scripted conversation, captured
+# from `mcp tools list`. One boolean per tool — the shape the metadata can
+# actually express. There is no per-operation variation: pause and live share
+# the same destructiveHint on nitro_control_delivery.
+
+nitro_query:
+  read_only_hint: true
+  destructive_hint: false
+
+nitro_compose_campaign:
+  read_only_hint: false
+  destructive_hint: true
+
+nitro_control_delivery:
+  read_only_hint: false
+  destructive_hint: true
+
+nitro_send_test_message:
+  read_only_hint: false
+  destructive_hint: true
+
+nitro_review_delivery:
+  read_only_hint: true
+  destructive_hint: false

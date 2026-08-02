@@ -51,6 +51,18 @@ module Api
       assert send.fetch("send").fetch("checks").any? { |check| check["ok"] == false }
     end
 
+    test "current annotations collapse draft and send into the same level" do
+      get "/api/conversation"
+
+      draft = actions.find { |action| action["tool"] == "nitro_compose_campaign" }
+      send = actions.find { |action| action["tool"] == "nitro_control_delivery" }
+
+      assert_equal "confirm", draft.dig("current", "consent_level")
+      assert_equal "confirm", send.dig("current", "consent_level")
+      assert_equal "notice", draft.dig("consequence", "consent_level")
+      assert_equal "verify", send.dig("consequence", "consent_level")
+    end
+
     private
 
     def actions
