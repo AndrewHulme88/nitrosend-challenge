@@ -90,22 +90,20 @@ const questions = [
       >
         <template #current>
           <PanelLabel />
-          <div class="rounded-xl border border-black/10 bg-[#faf6ee] p-4">
-            <div
-              class="flex flex-col gap-3 rounded-lg border border-[#e8c99a] bg-[#fbf3e4] px-3.5 py-3 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <p class="font-mono text-sm text-stone-800">Allow control delivery</p>
-              <div class="flex gap-4 self-end sm:self-auto">
-                <span class="text-sm font-medium text-[#c45c26]">Allow</span>
-                <span class="text-sm font-medium text-[#c43c2b]">Deny</span>
-              </div>
-            </div>
-            <p class="mt-4 text-sm leading-relaxed text-stone-500">
-              No description, no audience, no sense of whether anything has been sent, and no
-              reversibility. The operator has to reconstruct the stakes from earlier chat, or guess
-              what they are agreeing to.
-            </p>
-          </div>
+          <figure
+            class="trust-media relative min-h-80 overflow-hidden rounded-xl border border-black/10 bg-white lg:min-h-0"
+          >
+            <img
+              src="/trust/confirm-current.png"
+              alt="Current Nitrosend Allow compose campaign bar with Allow and Deny"
+              class="absolute inset-0 h-full w-full object-contain object-top"
+            />
+          </figure>
+          <Annotation tone="problem">
+            No description of what the user is agreeing to, no audience, no sense of whether anything has been sent, and no
+            reversibility. The operator has to reconstruct the stakes from earlier chat, or guess
+            what they are agreeing to.
+          </Annotation>
         </template>
         <template #proposed>
           <PanelLabel tone="proposed" />
