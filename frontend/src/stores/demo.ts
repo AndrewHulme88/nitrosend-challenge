@@ -4,100 +4,123 @@ import { computed, ref } from 'vue'
 export type DemoPhase =
   | 'prompt1'
   | 'composeFail'
-  | 'confirm'
-  | 'prompt2'
-  | 'dnsFail'
+  | 'confirmCompose'
+  | 'prepared'
+  | 'sendConfirm'
   | 'done'
 
 export const useDemoStore = defineStore('demo', () => {
   const phase = ref<DemoPhase>('prompt1')
-  const denied = ref(false)
+  const composeDenied = ref(false)
+  const sendDenied = ref(false)
 
   const showComposeFail = computed(() => phase.value !== 'prompt1')
   const composeFailPending = computed(() => phase.value === 'composeFail')
 
-  const showConfirm = computed(
+  const showComposeConfirm = computed(
     () =>
-      phase.value === 'confirm' ||
-      phase.value === 'prompt2' ||
-      phase.value === 'dnsFail' ||
+      phase.value === 'confirmCompose' ||
+      phase.value === 'prepared' ||
+      phase.value === 'sendConfirm' ||
       phase.value === 'done',
   )
-  const showInform = computed(
-    () =>
-      phase.value === 'prompt2' ||
-      phase.value === 'dnsFail' ||
-      phase.value === 'done',
-  )
-  const showPrompt2 = computed(
-    () =>
-      phase.value === 'prompt2' ||
-      phase.value === 'dnsFail' ||
-      phase.value === 'done',
-  )
-  const showDnsFail = computed(
-    () => phase.value === 'dnsFail' || phase.value === 'done',
+  const composeConfirmPending = computed(
+    () => phase.value === 'confirmCompose' && !composeDenied.value,
   )
 
+  const showPrepared = computed(
+    () =>
+      phase.value === 'prepared' ||
+      phase.value === 'sendConfirm' ||
+      phase.value === 'done',
+  )
+  const preparedPending = computed(() => phase.value === 'prepared')
+
+  const showSendConfirm = computed(
+    () => phase.value === 'sendConfirm' || phase.value === 'done',
+  )
+  const sendConfirmPending = computed(
+    () => phase.value === 'sendConfirm' && !sendDenied.value,
+  )
+
+  const showSuccess = computed(() => phase.value === 'done')
+
   const prompt1Pending = computed(() => phase.value === 'prompt1')
-  const prompt2Pending = computed(() => phase.value === 'prompt2')
-  const confirmPending = computed(() => phase.value === 'confirm' && !denied.value)
 
   function sendPrompt1() {
     if (phase.value !== 'prompt1') return
-    denied.value = false
+    composeDenied.value = false
+    sendDenied.value = false
     phase.value = 'composeFail'
   }
 
   function retryCompose() {
     if (phase.value !== 'composeFail') return
-    phase.value = 'confirm'
+    phase.value = 'confirmCompose'
   }
 
-  function allow() {
-    if (phase.value !== 'confirm') return
-    denied.value = false
-    phase.value = 'prompt2'
+  function allowCompose() {
+    if (phase.value !== 'confirmCompose') return
+    composeDenied.value = false
+    phase.value = 'prepared'
   }
 
-  function deny() {
-    if (phase.value !== 'confirm') return
-    denied.value = true
+  function denyCompose() {
+    if (phase.value !== 'confirmCompose') return
+    composeDenied.value = true
   }
 
-  function sendPrompt2() {
-    if (phase.value !== 'prompt2') return
-    phase.value = 'dnsFail'
+  function viewCampaign() {
+    if (phase.value !== 'prepared') return
+    sendDenied.value = false
+    phase.value = 'sendConfirm'
   }
 
-  function finish() {
-    if (phase.value !== 'dnsFail') return
+  function allowSend() {
+    if (phase.value !== 'sendConfirm') return
+    sendDenied.value = false
     phase.value = 'done'
+  }
+
+  function denySend() {
+    if (phase.value !== 'sendConfirm') return
+    sendDenied.value = true
+  }
+
+  /** From a denied live send, reopen the campaign preview and confirm. */
+  function reviewAgain() {
+    if (phase.value !== 'sendConfirm' || !sendDenied.value) return
+    sendDenied.value = false
   }
 
   function reset() {
     phase.value = 'prompt1'
-    denied.value = false
+    composeDenied.value = false
+    sendDenied.value = false
   }
 
   return {
     phase,
-    denied,
+    composeDenied,
+    sendDenied,
     showComposeFail,
     composeFailPending,
-    showConfirm,
-    showInform,
-    showPrompt2,
-    showDnsFail,
+    showComposeConfirm,
+    composeConfirmPending,
+    showPrepared,
+    preparedPending,
+    showSendConfirm,
+    sendConfirmPending,
+    showSuccess,
     prompt1Pending,
-    prompt2Pending,
-    confirmPending,
     sendPrompt1,
     retryCompose,
-    allow,
-    deny,
-    sendPrompt2,
-    finish,
+    allowCompose,
+    denyCompose,
+    viewCampaign,
+    allowSend,
+    denySend,
+    reviewAgain,
     reset,
   }
 })

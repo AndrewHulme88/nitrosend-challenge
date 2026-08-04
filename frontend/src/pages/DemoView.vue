@@ -8,20 +8,22 @@ import DemoToolPill from '@/components/demo/DemoToolPill.vue'
 import DemoConfirmCard from '@/components/demo/DemoConfirmCard.vue'
 import DemoInformCard from '@/components/demo/DemoInformCard.vue'
 import DemoFailureCard from '@/components/demo/DemoFailureCard.vue'
+import DemoSendConfirmCard from '@/components/demo/DemoSendConfirmCard.vue'
 
 const demo = useDemoStore()
 const {
-  denied,
+  composeDenied,
+  sendDenied,
   showComposeFail,
   composeFailPending,
-  showConfirm,
-  showInform,
-  showPrompt2,
-  showDnsFail,
+  showComposeConfirm,
+  composeConfirmPending,
+  showPrepared,
+  preparedPending,
+  showSendConfirm,
+  sendConfirmPending,
+  showSuccess,
   prompt1Pending,
-  prompt2Pending,
-  confirmPending,
-  phase,
 } = storeToRefs(demo)
 </script>
 
@@ -81,7 +83,6 @@ const {
             </button>
           </div>
 
-          <!-- Prompt 1 -->
           <DemoUserPrompt :pending="prompt1Pending" @send="demo.sendPrompt1()">
             <template #label>
               <DemoSpeaker role="user" />
@@ -90,7 +91,7 @@ const {
             looks right.
           </DemoUserPrompt>
 
-          <!-- First failure: Compose Campaign (mirrors the real product moment) -->
+          <!-- Failure: explained + retry -->
           <div v-if="showComposeFail" class="animate-rise space-y-3">
             <DemoSpeaker role="assistant" />
             <div class="flex flex-wrap gap-2">
@@ -120,24 +121,24 @@ const {
             </p>
           </div>
 
-          <!-- Confirm -->
-          <div v-if="showConfirm" class="animate-rise space-y-3">
+          <!-- Confirm compose -->
+          <div v-if="showComposeConfirm" class="animate-rise space-y-3">
             <DemoSpeaker role="assistant" />
             <div class="flex flex-wrap gap-2">
               <DemoToolPill label="Search Contacts" tone="ok" />
               <DemoToolPill
                 label="Compose Campaign"
-                :tone="confirmPending ? 'waiting' : denied ? 'idle' : 'ok'"
+                :tone="composeConfirmPending ? 'waiting' : composeDenied ? 'idle' : 'ok'"
               />
             </div>
 
             <DemoConfirmCard
-              v-if="confirmPending"
-              @allow="demo.allow()"
-              @deny="demo.deny()"
+              v-if="composeConfirmPending"
+              @allow="demo.allowCompose()"
+              @deny="demo.denyCompose()"
             />
 
-            <p v-else-if="denied" class="text-sm text-stone-500">
+            <p v-else-if="composeDenied" class="text-sm text-stone-500">
               Denied. Nothing was drafted or sent.
               <button
                 type="button"
@@ -149,57 +150,59 @@ const {
             </p>
 
             <p v-else class="text-sm text-stone-500">
-              Allowed. Draft prepared — still nothing sent to the list.
+              Allowed. Draft prepared — still nothing sent to the audience.
             </p>
           </div>
 
-          <!-- Inform -->
-          <div v-if="showInform" class="animate-rise space-y-3">
+          <!-- Prepared: draft + test, live not sent yet -->
+          <div v-if="showPrepared" class="animate-rise space-y-3">
             <DemoSpeaker role="assistant" />
-            <DemoInformCard />
-          </div>
-
-          <!-- Prompt 2: DNS -->
-          <DemoUserPrompt
-            v-if="showPrompt2"
-            :pending="prompt2Pending"
-            @send="demo.sendPrompt2()"
-          >
-            <template #label>
-              <DemoSpeaker role="user" />
-            </template>
-            Can you set up DNS for
-            <span
-              class="mx-0.5 rounded-full border border-[#e85d2c]/30 bg-white px-2 py-0.5 text-[#e85d2c]"
-              >send.moonfallsoftware.com</span
-            >
-            so the live send isn’t held?
-          </DemoUserPrompt>
-
-          <!-- DNS failure -->
-          <div v-if="showDnsFail" class="animate-rise space-y-3">
-            <DemoSpeaker role="assistant" />
-            <div class="flex flex-wrap gap-2">
-              <DemoToolPill label="Manage Domains failed" tone="fail" />
-            </div>
-            <DemoFailureCard
-              v-if="phase === 'dnsFail'"
-              chip="Manage Domains failed"
-              title="Could not refresh the DNS setup link"
-              body="The automatic setup request failed before a new link was created. Nothing in your DNS was changed. Your domain is still waiting to be activated."
-              :points="[
-                'No DNS records were written or overwritten',
-                'send.moonfallsoftware.com is still registered and waiting',
-                'You can retry automatic setup, or finish with manual records',
-              ]"
-              primary-label="Try again"
-              secondary-label="Set up DNS manually"
-              @primary="demo.finish()"
-              @secondary="demo.finish()"
+            <DemoInformCard
+              outcome="prepared"
+              :show-view="preparedPending"
+              @view="demo.viewCampaign()"
             />
-            <p v-else class="text-sm text-stone-500">
-              Got it — you can finish DNS from here whenever you are ready.
+          </div>
+
+          <!-- View campaign + confirm live send -->
+          <div v-if="showSendConfirm" class="animate-rise space-y-3">
+            <DemoSpeaker role="assistant" />
+            <DemoSendConfirmCard
+              :pending="sendConfirmPending"
+              @allow="demo.allowSend()"
+              @deny="demo.denySend()"
+            />
+            <p v-if="sendDenied" class="text-sm text-stone-500">
+              Denied. The live send was not delivered. The draft and test are still there.
+              <button
+                type="button"
+                class="ms-1 font-medium text-[#e85d2c] underline-offset-2 hover:underline"
+                @click="demo.reviewAgain()"
+              >
+                Review again
+              </button>
             </p>
+            <div
+              v-else-if="showSuccess"
+              class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-5"
+            >
+              <div class="flex items-start gap-3">
+                <span
+                  class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white"
+                  aria-hidden="true"
+                  >✓</span
+                >
+                <div class="min-w-0">
+                  <p class="text-lg font-semibold tracking-tight text-emerald-950">
+                    Live send delivered
+                  </p>
+                  <p class="mt-1 text-[15px] leading-relaxed text-emerald-900/80">
+                    <strong class="font-semibold">Welcome to MoonFall Software</strong>
+                    was sent to Andrew. 1 recipient · delivered.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
