@@ -18,14 +18,18 @@ function toggle() {
   <div class="max-w-full">
     <button
       type="button"
-      class="inline-flex max-w-full items-center gap-2 rounded-full px-3 py-1.5 text-left text-xs font-medium transition-colors"
+      class="inline-flex max-w-full items-center gap-1.5 rounded-full border px-2 py-0.5 text-left text-[10px] font-medium transition-colors"
       :class="{
-        'bg-stone-100 text-stone-600 hover:bg-stone-200/80':
-          (tone ?? 'idle') === 'idle' || tone === 'waiting',
-        'bg-emerald-50 text-emerald-800 hover:bg-emerald-100': tone === 'ok',
-        'bg-amber-50 text-amber-900 hover:bg-amber-100': tone === 'warn',
-        'bg-red-50 text-red-800 hover:bg-red-100': tone === 'fail',
-        'ring-2 ring-[#e85d2c]/25': open,
+        'border-stone-300 bg-stone-100 text-stone-600 hover:bg-stone-200/80':
+          (tone ?? 'idle') === 'idle',
+        'border-[#e85d2c]/50 bg-stone-100 text-stone-600 hover:bg-stone-200/80':
+          tone === 'waiting',
+        'border-emerald-700/40 bg-emerald-50 text-emerald-800 hover:bg-emerald-100':
+          tone === 'ok',
+        'border-amber-700/40 bg-amber-50 text-amber-900 hover:bg-amber-100':
+          tone === 'warn',
+        'border-red-700/45 bg-red-50 text-red-800 hover:bg-red-100': tone === 'fail',
+        'ring-2 ring-[#e85d2c]/20': open,
       }"
       :aria-expanded="open"
       @click="toggle"
@@ -35,24 +39,24 @@ function toggle() {
         :class="{
           'bg-stone-400': (tone ?? 'idle') === 'idle',
           'bg-[#e85d2c]': tone === 'waiting',
-          'bg-emerald-500': tone === 'ok',
-          'bg-amber-500': tone === 'warn',
-          'bg-red-500': tone === 'fail',
+          'bg-emerald-600': tone === 'ok',
+          'bg-amber-600': tone === 'warn',
+          'bg-red-600': tone === 'fail',
         }"
         aria-hidden="true"
       />
       <span class="truncate">{{ label }}</span>
-      <span class="text-[10px] opacity-50" aria-hidden="true">{{ open ? '▴' : '▾' }}</span>
+      <span class="text-[9px] opacity-50" aria-hidden="true">{{ open ? '▴' : '▾' }}</span>
     </button>
 
     <div
       v-if="open"
-      class="animate-rise mt-2 max-w-sm rounded-xl border border-black/10 px-3.5 py-3 text-sm leading-relaxed text-stone-600"
+      class="animate-rise mt-1.5 max-w-sm rounded-xl bg-stone-50/70 px-3 py-2 text-sm leading-relaxed text-stone-600"
     >
       <p class="text-[11px] font-semibold tracking-[0.1em] text-stone-400 uppercase">
         {{ props.label.replace(/ failed$/, '') }}
       </p>
-      <p class="mt-1.5">{{ explanation }}</p>
+      <p class="mt-1">{{ explanation }}</p>
     </div>
   </div>
 </template>

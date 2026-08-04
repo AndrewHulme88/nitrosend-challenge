@@ -69,7 +69,7 @@ const {
       </header>
 
       <div class="min-h-0 flex-1 overflow-y-auto px-6 sm:px-10">
-        <div class="mx-auto max-w-2xl space-y-8 py-4 pb-10" aria-label="Proposed trust walkthrough">
+        <div class="mx-auto max-w-2xl space-y-6 py-4 pb-10" aria-label="Proposed trust walkthrough">
           <div class="flex items-center justify-between gap-3">
             <p class="text-[11px] font-semibold tracking-[0.14em] text-stone-400 uppercase">
               Conversation
@@ -92,7 +92,10 @@ const {
           </DemoUserPrompt>
 
           <!-- Failure: explained + retry -->
-          <div v-if="showComposeFail" class="animate-rise space-y-3">
+          <div
+            v-if="showComposeFail"
+            class="animate-rise space-y-3 border-t border-black/6 pt-4"
+          >
             <DemoSpeaker role="assistant" />
             <div class="flex flex-col items-start gap-2">
               <div class="flex flex-wrap gap-2">
@@ -129,7 +132,10 @@ const {
           </div>
 
           <!-- Confirm compose -->
-          <div v-if="showComposeConfirm" class="animate-rise space-y-3">
+          <div
+            v-if="showComposeConfirm"
+            class="animate-rise space-y-3 border-t border-black/6 pt-4"
+          >
             <DemoSpeaker role="assistant" />
             <div class="flex flex-col items-start gap-2">
               <div class="flex flex-wrap gap-2">
@@ -169,7 +175,10 @@ const {
           </div>
 
           <!-- Prepared: draft + test, live not sent yet -->
-          <div v-if="showPrepared" class="animate-rise space-y-3">
+          <div
+            v-if="showPrepared"
+            class="animate-rise space-y-3 border-t border-black/6 pt-4"
+          >
             <DemoSpeaker role="assistant" />
             <DemoInformCard
               outcome="prepared"
@@ -179,7 +188,10 @@ const {
           </div>
 
           <!-- View campaign + confirm live send -->
-          <div v-if="showSendConfirm" class="animate-rise space-y-3">
+          <div
+            v-if="showSendConfirm"
+            class="animate-rise space-y-3 border-t border-black/6 pt-4"
+          >
             <DemoSpeaker role="assistant" />
             <DemoSendConfirmCard
               :pending="sendConfirmPending"
@@ -198,19 +210,19 @@ const {
             </p>
             <div
               v-else-if="showSuccess"
-              class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-5"
+              class="rounded-2xl bg-emerald-50/60 px-3.5 py-2"
             >
               <div class="flex items-start gap-3">
                 <span
-                  class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white"
+                  class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white"
                   aria-hidden="true"
                   >✓</span
                 >
                 <div class="min-w-0">
-                  <p class="text-lg font-semibold tracking-tight text-emerald-950">
+                  <p class="text-xs font-semibold tracking-tight text-emerald-950">
                     Live send delivered
                   </p>
-                  <p class="mt-1 text-[15px] leading-relaxed text-emerald-900/80">
+                  <p class="mt-0.5 text-xs leading-relaxed text-emerald-900/80">
                     <strong class="font-semibold">Welcome to MoonFall Software</strong>
                     was sent to Andrew. 1 recipient · delivered.
                   </p>

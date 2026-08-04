@@ -39,7 +39,7 @@ defineEmits<{
 
     <ol class="space-y-2.5">
       <li
-        class="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 px-3.5 py-3"
+        class="flex items-start gap-3 rounded-2xl bg-emerald-50/60 px-3.5 py-2"
       >
         <span
           class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white"
@@ -47,13 +47,13 @@ defineEmits<{
           >✓</span
         >
         <div class="min-w-0">
-          <p class="text-sm font-semibold text-emerald-950">Test delivered</p>
-          <p class="mt-0.5 text-sm text-emerald-900/75">andrew_hulme04@hotmail.com</p>
+          <p class="text-xs font-semibold text-emerald-950">Test delivered</p>
+          <p class="mt-0.5 text-xs text-emerald-900/75">andrew_hulme04@hotmail.com</p>
         </div>
       </li>
       <li
         v-if="outcome === 'sent'"
-        class="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 px-3.5 py-3"
+        class="flex items-start gap-3 rounded-2xl bg-emerald-50/60 px-3.5 py-2"
       >
         <span
           class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white"
@@ -61,13 +61,13 @@ defineEmits<{
           >✓</span
         >
         <div class="min-w-0">
-          <p class="text-sm font-semibold text-emerald-950">Live send delivered</p>
-          <p class="mt-0.5 text-sm text-emerald-900/75">Delivered to Andrew</p>
+          <p class="text-xs font-semibold text-emerald-950">Live send delivered</p>
+          <p class="mt-0.5 text-xs text-emerald-900/75">Delivered to Andrew</p>
         </div>
       </li>
       <li
         v-else
-        class="flex items-start gap-3 rounded-2xl border border-amber-100 bg-amber-50 px-3.5 py-3"
+        class="flex items-start gap-3 rounded-2xl bg-amber-50/60 px-3.5 py-2"
       >
         <span
           class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white"
@@ -75,8 +75,8 @@ defineEmits<{
           >!</span
         >
         <div class="min-w-0">
-          <p class="text-sm font-semibold text-amber-950">Live send waiting</p>
-          <p class="mt-0.5 text-sm text-amber-900/75">
+          <p class="text-xs font-semibold text-amber-950">Live send waiting</p>
+          <p class="mt-0.5 text-xs text-amber-900/75">
             Audience has not been contacted. View the campaign, then allow send.
           </p>
         </div>

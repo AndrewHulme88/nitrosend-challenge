@@ -17,9 +17,9 @@ defineEmits<{
 <template>
   <div class="space-y-4">
     <span
-      class="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1.5 text-xs font-medium text-red-800"
+      class="inline-flex items-center gap-1.5 rounded-full border border-red-700/45 bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-800"
     >
-      <span class="size-1.5 rounded-full bg-red-500" aria-hidden="true" />
+      <span class="size-1.5 rounded-full bg-red-600" aria-hidden="true" />
       {{ chip }}
     </span>
 
@@ -30,7 +30,7 @@ defineEmits<{
       </p>
     </div>
 
-    <div class="rounded-2xl border border-red-100 bg-red-50 p-4">
+    <div class="rounded-2xl bg-red-50 p-4">
       <p class="text-[11px] font-semibold tracking-[0.12em] text-red-700/70 uppercase">
         What this means
       </p>
@@ -53,7 +53,7 @@ defineEmits<{
       <button
         v-if="secondaryLabel"
         type="button"
-        class="rounded-full border border-black/10 bg-white px-5 py-2.5 text-sm font-medium text-stone-600"
+        class="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-stone-600"
         @click="$emit('secondary')"
       >
         {{ secondaryLabel }}

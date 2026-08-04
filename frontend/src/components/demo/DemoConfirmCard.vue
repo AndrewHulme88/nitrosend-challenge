@@ -8,7 +8,7 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="rounded-2xl border border-black/8 bg-white p-4 sm:p-5">
+  <div>
     <StatusChip tone="idle">Waiting for your decision</StatusChip>
 
     <h3 class="mt-3 text-lg font-semibold tracking-tight text-balance">
@@ -21,7 +21,7 @@ defineEmits<{
       · nothing is sent until you allow a later live send
     </p>
 
-    <div class="mt-4 rounded-xl border border-black/6 bg-stone-50 p-3.5">
+      <div class="mt-4 rounded-xl bg-[#fdfaf7] p-3.5">
       <p class="text-[11px] font-semibold tracking-[0.12em] text-stone-400 uppercase">
         What you are allowing
       </p>
@@ -46,7 +46,7 @@ defineEmits<{
       </button>
       <button
         type="button"
-        class="rounded-full border border-black/10 bg-white px-5 py-2.5 text-sm font-medium text-stone-600"
+        class="rounded-full bg-white px-5 py-2.5 text-sm font-medium text-stone-600"
         @click="$emit('deny')"
       >
         Deny
