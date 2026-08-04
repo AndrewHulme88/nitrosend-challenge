@@ -47,6 +47,12 @@ function isDraftAction(step: Action) {
           :mode="conversation.mode"
           @update:mode="conversation.setMode($event)"
         />
+        <RouterLink
+          to="/"
+          class="hidden text-2xs text-muted underline-offset-2 hover:text-ink hover:underline sm:inline"
+        >
+          Trust redesign
+        </RouterLink>
       </div>
     </header>
 

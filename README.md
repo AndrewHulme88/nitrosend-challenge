@@ -11,12 +11,11 @@ conversation is shown under both, with a Current / Proposed toggle.
 
 ## What to look for
 
-1. Start on **Current** — Allow/Deny bars, terse failures, preview as a link out
-   of the chat.
-2. Flip to **Proposed** — quiet reads, a draft that says nothing was sent, an
-   in-thread email preview, blockers explained before send controls appear.
-3. Finish a path (send, not now, or discard) - the closing note summarises the
-   difference.
+1. **Trust proposal (`/`)** — three tool moments (Confirm, Inform, Failure) as
+   current vs proposed UI. Each answers: what am I agreeing to?, has anything
+   been sent?, if it failed what happened?
+2. **Interactive walkthrough (`/conversation`)** — Current / Proposed toggle on
+   the same scripted winter-sale send.
 
 ## Stack
 

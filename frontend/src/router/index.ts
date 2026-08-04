@@ -3,6 +3,11 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
+    name: 'trust',
+    component: () => import('@/pages/TrustView.vue'),
+  },
+  {
+    path: '/conversation',
     name: 'conversation',
     component: () => import('@/pages/ConversationView.vue'),
   },
