@@ -32,10 +32,10 @@ const questions = [
           <p class="mt-0.5 text-sm text-stone-500">Andrew Hulme - Product Engineer Challenge</p>
         </div>
         <RouterLink
-          to="/conversation"
+          to="/demo"
           class="text-[20px] font-medium text-[#c45c26] underline-offset-2 hover:underline"
         >
-          See the interactive walkthrough →
+          See the proposed walkthrough →
         </RouterLink>
       </div>
     </header>
@@ -399,7 +399,7 @@ const questions = [
             to="/conversation"
             class="text-[20px] font-medium text-[#c45c26] underline-offset-2 hover:underline"
           >
-            See the interactive walkthrough →
+            See the proposed walkthrough →
           </RouterLink>
         </div>
       </footer>
