@@ -59,16 +59,10 @@ const {
             </p>
           </div>
         </div>
-        <RouterLink
-          to="/"
-          class="shrink-0 text-[18px] text-[#c45c26] underline-offset-2 hover:underline"
-        >
-          Back to Trust proposal
-        </RouterLink>
       </header>
 
       <div class="min-h-0 flex-1 overflow-y-auto px-6 sm:px-10">
-        <div class="mx-auto max-w-2xl space-y-6 py-4 pb-10" aria-label="Proposed trust walkthrough">
+        <div class="mx-auto max-w-2xl space-y-6 py-4 pb-10" aria-label="Proposed walkthrough">
           <div class="flex items-center justify-between gap-3">
             <p class="text-[11px] font-semibold tracking-[0.14em] text-stone-400 uppercase">
               Conversation

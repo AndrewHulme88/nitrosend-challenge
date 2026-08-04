@@ -2,20 +2,20 @@
 
 A product and UX prototype for the Nitrosend Product Engineer application.
 
-It demonstrates graded consent for agent tool calls: the current version's
-`destructiveHint` boolean versus a consequence-based model (reversibility and
-reach `none` / `notice` / `confirm` / `verify`). The same scripted winter-sale
-conversation is shown under both, with a Current / Proposed toggle.
+It shows a proposed trust UX for agent tool moments - confirm, inform, and
+failure - inside a Nitrosend-like chat shell. The walkthrough makes clear what
+you are agreeing to, whether anything has been sent, and what to do when a tool
+fails.
 
 **Live demo:** [https://nitrosend-challenge.fly.dev](https://nitrosend-challenge.fly.dev)
 
 ## What to look for
 
-1. **Trust proposal (`/`)** — three tool moments (Confirm, Inform, Failure) as
-   current vs proposed UI. Each answers: what am I agreeing to?, has anything
-   been sent?, if it failed what happened?
-2. **Interactive walkthrough (`/conversation`)** — Current / Proposed toggle on
-   the same scripted winter-sale send.
+The interactive walkthrough at `/` walks through composing a welcome email:
+explained failure with retry, clear compose consent, prepared status (draft /
+test / live held), live send confirm with preview, and a clear delivered outcome.
+
+There is also a Current / Proposed graded-consent conversation at `/conversation`.
 
 ## Stack
 

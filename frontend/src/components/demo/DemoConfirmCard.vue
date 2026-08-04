@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import StatusChip from '@/components/trust/StatusChip.vue'
+import StatusChip from '@/components/demo/StatusChip.vue'
 
 defineEmits<{
   allow: []
