@@ -43,15 +43,14 @@ const {
       "
     >
       <header class="flex shrink-0 items-start justify-between gap-4 px-6 pt-6 pb-4 sm:px-10">
-        <div class="flex min-w-0 items-start gap-3">
-          <div
-            class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#5b4db8] text-sm font-bold text-white"
-            aria-hidden="true"
-          >
-            MF
-          </div>
+        <div class="flex min-w-0 items-start gap-3.5">
+          <img
+            src="/moonfall-logo.png"
+            alt="MoonFall Software"
+            class="size-14 shrink-0 rounded-xl object-contain"
+          />
           <div class="min-w-0">
-            <h1 class="text-lg font-semibold tracking-tight">MoonFall Software</h1>
+            <h1 class="text-2xl font-bold tracking-tight">MoonFall Software</h1>
             <p class="mt-0.5 text-sm text-stone-500">
               MoonFall Software specializes in creating...
               <button type="button" class="ms-1 font-medium text-[#e85d2c]">
