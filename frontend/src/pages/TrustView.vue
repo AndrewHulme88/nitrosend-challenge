@@ -382,8 +382,10 @@ const questions = [
             are understandable. Nitrosend attempts to address this with a solid promise that a human is always in
             control. Currently, though, it does not feel that way when actually using the product. If Nitrosend can
             match the product to the promise it makes, and keep the user feeling in control and informed at all
-            times, people are more likely to believe that promise. You would not build a house on sand. Make sure
-            Nitrosend is built on a solid foundation of trust.
+            times, people are more likely to believe that promise. The user's interactions with the agent is at the 
+            forefront of everything they do. If this is solid, then the rest of Nitrosend can build off it with new
+            features and improvements. You would not build a house on sand. Make sure Nitrosend is built on a solid 
+            foundation of trust.
           </p>
         </div>
       </section>
@@ -396,7 +398,7 @@ const questions = [
             Make consequential moments calm, explicit, and recoverable.
           </p>
           <RouterLink
-            to="/conversation"
+            to="/demo"
             class="text-[20px] font-medium text-[#c45c26] underline-offset-2 hover:underline"
           >
             See the proposed walkthrough →

@@ -1,5 +1,28 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+import { useDemoStore } from '@/stores/demo'
 import DemoSidebar from '@/components/demo/DemoSidebar.vue'
+import DemoSpeaker from '@/components/demo/DemoSpeaker.vue'
+import DemoUserPrompt from '@/components/demo/DemoUserPrompt.vue'
+import DemoToolPill from '@/components/demo/DemoToolPill.vue'
+import DemoConfirmCard from '@/components/demo/DemoConfirmCard.vue'
+import DemoInformCard from '@/components/demo/DemoInformCard.vue'
+import DemoFailureCard from '@/components/demo/DemoFailureCard.vue'
+
+const demo = useDemoStore()
+const {
+  denied,
+  showComposeFail,
+  composeFailPending,
+  showConfirm,
+  showInform,
+  showPrompt2,
+  showDnsFail,
+  prompt1Pending,
+  prompt2Pending,
+  confirmPending,
+  phase,
+} = storeToRefs(demo)
 </script>
 
 <template>
@@ -44,10 +67,140 @@ import DemoSidebar from '@/components/demo/DemoSidebar.vue'
       </header>
 
       <div class="min-h-0 flex-1 overflow-y-auto px-6 sm:px-10">
-        <div class="mx-auto flex h-full max-w-2xl flex-col justify-center py-10">
-          <p class="text-center text-sm text-stone-400">
-            Simulated chat will play out here.
-          </p>
+        <div class="mx-auto max-w-2xl space-y-8 py-4 pb-10" aria-label="Proposed trust walkthrough">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-[11px] font-semibold tracking-[0.14em] text-stone-400 uppercase">
+              Conversation
+            </p>
+            <button
+              type="button"
+              class="text-sm text-stone-400 underline-offset-2 hover:text-stone-600 hover:underline"
+              @click="demo.reset()"
+            >
+              Start over
+            </button>
+          </div>
+
+          <!-- Prompt 1 -->
+          <DemoUserPrompt :pending="prompt1Pending" @send="demo.sendPrompt1()">
+            <template #label>
+              <DemoSpeaker role="user" />
+            </template>
+            Draft a welcome email for Andrew, send me a test, then send it live when it
+            looks right.
+          </DemoUserPrompt>
+
+          <!-- First failure: Compose Campaign (mirrors the real product moment) -->
+          <div v-if="showComposeFail" class="animate-rise space-y-3">
+            <DemoSpeaker role="assistant" />
+            <div class="flex flex-wrap gap-2">
+              <DemoToolPill label="Search Contacts" tone="ok" />
+              <DemoToolPill
+                :label="composeFailPending ? 'Compose Campaign failed' : 'Compose Campaign'"
+                :tone="composeFailPending ? 'fail' : 'ok'"
+              />
+            </div>
+
+            <DemoFailureCard
+              v-if="composeFailPending"
+              chip="Compose Campaign failed"
+              title="Could not create the campaign draft"
+              body="The compose request failed before a draft was saved. Nothing was written to Campaigns, and nothing was sent."
+              :points="[
+                'No campaign draft was created',
+                'Andrew was found in contacts, but the email was not composed',
+                'You can retry compose, or stop here with nothing changed',
+              ]"
+              primary-label="Try again"
+              @primary="demo.retryCompose()"
+            />
+
+            <p v-else class="text-sm text-stone-500">
+              Compose succeeded on retry. Ready for your decision on what happens next.
+            </p>
+          </div>
+
+          <!-- Confirm -->
+          <div v-if="showConfirm" class="animate-rise space-y-3">
+            <DemoSpeaker role="assistant" />
+            <div class="flex flex-wrap gap-2">
+              <DemoToolPill label="Search Contacts" tone="ok" />
+              <DemoToolPill
+                label="Compose Campaign"
+                :tone="confirmPending ? 'waiting' : denied ? 'idle' : 'ok'"
+              />
+            </div>
+
+            <DemoConfirmCard
+              v-if="confirmPending"
+              @allow="demo.allow()"
+              @deny="demo.deny()"
+            />
+
+            <p v-else-if="denied" class="text-sm text-stone-500">
+              Denied. Nothing was drafted or sent.
+              <button
+                type="button"
+                class="ms-1 font-medium text-[#e85d2c] underline-offset-2 hover:underline"
+                @click="demo.reset()"
+              >
+                Start over
+              </button>
+            </p>
+
+            <p v-else class="text-sm text-stone-500">
+              Allowed. Draft prepared — still nothing sent to the list.
+            </p>
+          </div>
+
+          <!-- Inform -->
+          <div v-if="showInform" class="animate-rise space-y-3">
+            <DemoSpeaker role="assistant" />
+            <DemoInformCard />
+          </div>
+
+          <!-- Prompt 2: DNS -->
+          <DemoUserPrompt
+            v-if="showPrompt2"
+            :pending="prompt2Pending"
+            @send="demo.sendPrompt2()"
+          >
+            <template #label>
+              <DemoSpeaker role="user" />
+            </template>
+            Can you set up DNS for
+            <span
+              class="mx-0.5 rounded-full border border-[#e85d2c]/30 bg-white px-2 py-0.5 text-[#e85d2c]"
+              >send.moonfallsoftware.com</span
+            >
+            so the live send isn’t held?
+          </DemoUserPrompt>
+
+          <!-- DNS failure -->
+          <div v-if="showDnsFail" class="animate-rise space-y-3">
+            <DemoSpeaker role="assistant" />
+            <div class="flex flex-wrap gap-2">
+              <DemoToolPill label="Manage Domains failed" tone="fail" />
+            </div>
+            <DemoFailureCard
+              v-if="phase === 'dnsFail'"
+              chip="Manage Domains failed"
+              title="Could not refresh the DNS setup link"
+              body="The automatic setup request failed before a new link was created. Nothing in your DNS was changed. Your domain is still waiting to be activated."
+              :points="[
+                'No DNS records were written or overwritten',
+                'send.moonfallsoftware.com is still registered and waiting',
+                'You can retry automatic setup, or finish with manual records',
+              ]"
+              primary-label="Try again"
+              secondary-label="Set up DNS manually"
+              @primary="demo.finish()"
+              @secondary="demo.finish()"
+            />
+            <p v-else class="text-sm text-stone-500">
+              Got it — you can finish DNS from here whenever you are ready.
+            </p>
+          </div>
         </div>
       </div>
 
