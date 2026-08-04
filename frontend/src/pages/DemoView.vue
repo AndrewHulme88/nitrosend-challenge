@@ -94,12 +94,19 @@ const {
           <!-- Failure: explained + retry -->
           <div v-if="showComposeFail" class="animate-rise space-y-3">
             <DemoSpeaker role="assistant" />
-            <div class="flex flex-wrap gap-2">
-              <DemoToolPill label="Search Contacts" tone="ok" />
-              <DemoToolPill
-                :label="composeFailPending ? 'Compose Campaign failed' : 'Compose Campaign'"
-                :tone="composeFailPending ? 'fail' : 'ok'"
-              />
+            <div class="flex flex-col items-start gap-2">
+              <div class="flex flex-wrap gap-2">
+                <DemoToolPill
+                  label="Search Contacts"
+                  tone="ok"
+                  explanation="Looks up Andrew in your contacts so the campaign has a real recipient. This only reads contact data. It does not send email."
+                />
+                <DemoToolPill
+                  :label="composeFailPending ? 'Compose Campaign failed' : 'Compose Campaign'"
+                  :tone="composeFailPending ? 'fail' : 'ok'"
+                  explanation="Creates a campaign draft from your request. On failure, nothing is written to Campaigns and nothing is sent. Retry asks the tool to try again."
+                />
+              </div>
             </div>
 
             <DemoFailureCard
@@ -124,12 +131,19 @@ const {
           <!-- Confirm compose -->
           <div v-if="showComposeConfirm" class="animate-rise space-y-3">
             <DemoSpeaker role="assistant" />
-            <div class="flex flex-wrap gap-2">
-              <DemoToolPill label="Search Contacts" tone="ok" />
-              <DemoToolPill
-                label="Compose Campaign"
-                :tone="composeConfirmPending ? 'waiting' : composeDenied ? 'idle' : 'ok'"
-              />
+            <div class="flex flex-col items-start gap-2">
+              <div class="flex flex-wrap gap-2">
+                <DemoToolPill
+                  label="Search Contacts"
+                  tone="ok"
+                  explanation="Looks up Andrew in your contacts so the campaign has a real recipient. This only reads contact data. It does not send email."
+                />
+                <DemoToolPill
+                  label="Compose Campaign"
+                  :tone="composeConfirmPending ? 'waiting' : composeDenied ? 'idle' : 'ok'"
+                  explanation="Creates or updates the Welcome to MoonFall Software draft. Waiting means the agent needs your Allow before it proceeds. Still nothing is sent to the audience."
+                />
+              </div>
             </div>
 
             <DemoConfirmCard
